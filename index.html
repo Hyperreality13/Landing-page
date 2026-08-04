@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIDAN — Personal Memory Layer for Founders | Connect Once. Forget Nothing.</title>
+  <meta name="description" content="AIDAN is an AI-powered personal memory layer for founders. Connect once. Forget nothing. Find everything. Turns scattered notes, chats, PDFs, and podcasts into instant usable memory.">
+
+  <!-- Google Fonts: EB Garamond (Headings) & Figtree (Body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+
+  <!-- GSAP & ScrollTrigger for Cinematic Scroll Animations -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Accessibility Skip Link -->
+  <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+  <!-- Top Announcement Bar -->
+  <div class="announcement-bar">
+    <div class="announcement-container">
+      <span class="announcement-tag">AIDAN MEMORY LAYER</span>
+      <span>Save any podcast, reel, post, or PDF. We bring the insight back when you need it.</span>
+      <a href="#demo" class="announcement-link">Watch it work →</a>
+    </div>
+  </div>
+
+  <!-- Floating Glass Navigation Bar -->
+  <header class="navbar-wrapper">
+    <nav class="navbar" id="navbar" aria-label="Main Navigation">
+      <div class="nav-container">
+        
+        <a href="#" class="nav-brand" aria-label="AIDAN Home Page">
+          <img src="logo.png" alt="AIDAN Logo" class="brand-logo-img">
+          <span class="brand-name">AIDAN</span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="#how-it-works" class="nav-item">How it works</a></li>
+          <li><a href="#three-things" class="nav-item">Three things</a></li>
+          <li><a href="#integrations" class="nav-item">Integrations</a></li>
+          <li><a href="#testimonials" class="nav-item">Love letters</a></li>
+          <li><a href="#security" class="nav-item">Security</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <button class="pill-btn pill-btn-ultramarine trigger-waitlist-modal magnetic-btn" aria-label="Join the AIDAN waitlist">
+            Join waitlist
+          </button>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero">
+      <div class="container hero-container">
+        
+        <div class="hero-badge reveal-up">
+          <span class="pulse-dot"></span>
+          <span class="hero-badge-text">A small fire for founders</span>
+        </div>
+
+        <!-- H1 Headline (120px EB Garamond) -->
+        <h1 class="hero-title reveal-up">
+          Save the insight, <br>
+          <span class="heading-underline-wrap">
+            <em class="serif-italic">forget about it.</em>
+            <svg class="heading-wavy-svg" viewBox="0 0 387 16" fill="none" preserveAspectRatio="none">
+              <path id="wavyPath1" d="M4 12C50 10 96 10 142 7C202 4 322 2 382 12" stroke="#0B2B9E" stroke-width="8" stroke-linecap="round"/>
+            </svg>
+          </span><br>
+          We'll bring it back.
+        </h1>
+
+        <!-- Subheadline (20px Figtree) -->
+        <p class="hero-description reveal-up">
+          You save podcasts, reels, posts, articles, and PDFs—and never open them again. 
+          AIDAN reads the whole thing and hands the insight back when it's useful. <strong>Not now. When you need it.</strong>
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="hero-cta-group reveal-up">
+          <button class="pill-btn pill-btn-ultramarine pill-btn-lg trigger-waitlist-modal magnetic-btn">
+            Join the waitlist
+            <svg class="btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3.333 8h9.334M8.667 3.333L13.333 8l-4.666 4.667" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <a href="#demo" class="pill-btn pill-btn-dark pill-btn-lg magnetic-btn">
+            Watch it work
+          </a>
+        </div>
+
+        <!-- Hero Curved SVG Path Marquee -->
+        <div class="hero-curved-svg-wrap reveal-up" aria-hidden="true">
+          <svg width="100%" height="auto" viewBox="0 0 1048 140" fill="none">
+            <path id="heroCurvePath" d="M0 50 C200 120 400 20 600 90 C800 140 950 30 1048 70" stroke="rgba(22, 82, 240, 0.15)" stroke-width="2"/>
+            <text class="curved-marquee-text">
+              <textPath href="#heroCurvePath" startOffset="0%">
+                Save podcasts • WhatsApp chats • Pitch deck PDFs • Sequoia Threads • Cold email reels • Hiring feedback • Product notes • Board sync updates •
+              </textPath>
+            </text>
+          </svg>
+        </div>
+
+        <!-- Hero Dark Feature Block (Wispr Midnight Container with 3D Tilt) -->
+        <div class="dark-feature-container tilt-card reveal-up" id="demo">
+          
+          <div class="dark-container-header">
+            <div class="app-chip-tag">
+              <span class="app-chip-dot"></span>
+              <span>18,420 dormant insights indexed across 8 apps</span>
+            </div>
+            <h2 class="dark-container-title">
+              Seamlessly remembers across <em class="serif-italic text-cyan">all your apps</em>
+            </h2>
+            <p class="dark-container-sub">
+              WhatsApp, ChatGPT, podcasts, reels, emails, and PDFs flow into one personal memory matrix.
+            </p>
+          </div>
+
+          <!-- App Icon Ribbon Marquee -->
+          <div class="app-ribbon-wrapper">
+            <div class="app-ribbon-track">
+              <div class="app-chip"><img src="https://api.iconify.design/logos:whatsapp-icon.svg" alt="WhatsApp"><span>WhatsApp</span></div>
+              <div class="app-chip"><img src="https://api.iconify.design/logos:openai-icon.svg" alt="ChatGPT"><span>ChatGPT</span></div>
+              <div class="app-chip"><img src="https://api.iconify.design/logos:claude.svg" alt="Claude"><span>Claude</span></div>
+              <div class="app-chip"><img src="https://api.iconify.design/logos:google-gmail.svg" alt="Gmail"><span>Gmail</span></div>
+              <div class="app-chip"><img src="https://api.iconify.design/logos:google-drive.svg" alt="Drive"><span>Drive</span></div>
+              <div class="app-chip"><img src="https://api.iconify.design/logos:chrome.svg" alt="Chrome"><span>Browser Tabs</span></div>
+              <div class="app-chip"><img src="https://api.iconify.design/logos:youtube-icon.svg" alt="Podcasts"><span>Podcasts</span></div>
+              <div class="app-chip"><img src="https://api.iconify.design/logos:instagram-icon.svg" alt="Reels"><span>IG Reels</span></div>
+              <div class="app-chip"><img src="https://api.iconify.design/logos:notion-icon.svg" alt="Notion"><span>Notion</span></div>
+              <!-- Infinite loop repeat -->
+              <div class="app-chip"><img src="https://api.iconify.design/logos:whatsapp-icon.svg" alt="WhatsApp"><span>WhatsApp</span></div>
+              <div class="app-chip"><img src="https://api.iconify.design/logos:openai-icon.svg" alt="ChatGPT"><span>ChatGPT</span></div>
+              <div class="app-chip"><img src="https://api.iconify.design/logos:claude.svg" alt="Claude"><span>Claude</span></div>
+            </div>
+          </div>
+
+          <!-- AIDAN Console Preview Card -->
+          <div class="aidan-ui-card">
+            <div class="ui-card-topbar">
+              <div class="window-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <div class="ui-title-tab">AIDAN Memory Console</div>
+              <div class="ui-status"><span class="live-pulse"></span> Live Ingestion</div>
+            </div>
+            
+            <div class="ui-card-body">
+              <div class="ui-search-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <div class="typewriter-text" id="hero-typewriter">What did Rahul say about pricing?</div>
+                <span class="typing-cursor"></span>
+              </div>
+
+              <div class="ui-answer-card">
+                <div class="answer-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                  Synthesized Memory Result
+                </div>
+                <p class="answer-text">
+                  Rahul suggested targeting a <mark class="mark-highlight">$3M raise at a $15M valuation</mark> during your Feb chat, backed by financial projections in your board deck.
+                </p>
+                <div class="answer-sources">
+                  <span class="source-tag"><img src="https://api.iconify.design/logos:whatsapp-icon.svg" width="12"> WhatsApp Chat</span>
+                  <span class="source-tag"><img src="https://api.iconify.design/vscode-icons:file-type-pdf2.svg" width="12"> fundraising-v3.pdf</span>
+                  <span class="source-tag"><img src="https://api.iconify.design/logos:google-calendar.svg" width="12"> Board Sync Notes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 1: THE BURIED INSIGHT PROBLEM -->
+    <section class="section-buried-problem">
+      <div class="container">
+        
+        <div class="section-heading text-center reveal-up">
+          <div class="eyebrow-pill">The Problem</div>
+          <h2 class="section-title">
+            You already found the answer.<br>
+            <span class="highlight-ultramarine">It's just buried somewhere.</span>
+          </h2>
+          <p class="section-subtitle">
+            You watched that fundraising podcast in February. Saved that cold email reel in January. Bookmarked the Sequoia thread six months ago. 
+            There's too much of it, and you can't have a notes app open every time the internet hands you something useful. <strong>AIDAN can.</strong>
+          </p>
+        </div>
+
+        <div class="faster-grid">
+          
+          <div class="faster-card faster-card-light tilt-card reveal-up">
+            <div class="faster-card-header">
+              <span class="faster-tag">Disjointed Internet Saving</span>
+              <h3 class="faster-speed">Lost Memory</h3>
+            </div>
+            <p class="faster-desc">Saved 40 reels, 12 podcasts, 9 PDFs across 7 apps—and forgot where every single insight lived when you actually needed to make a decision.</p>
+            <div class="faster-track-strip">
+              <div class="track-text-loop">
+                <span>Bookmarked Twitter thread... Saved Instagram reel... Downloaded PDF deck... Left voice note... Can't find it now...</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="faster-card faster-card-dark tilt-card reveal-up">
+            <div class="faster-card-header">
+              <span class="faster-tag tag-cyan">AIDAN Memory Synthesis</span>
+              <h3 class="faster-speed text-cyan">Instant Recall</h3>
+            </div>
+            <p class="faster-desc text-muted">AIDAN solves the problem of right information at the wrong time. Surfaces the exact note when you reach that milestone stage.</p>
+            
+            <div class="faster-live-preview">
+              <div class="fast-query">"Where is the cold email template I saved in January?"</div>
+              <div class="fast-result">→ Retrieved from Instagram Reel bookmark. Surfaced for GTM launch stage.</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 2: THREE STEPS. ZERO NEW HABITS. -->
+    <section class="section-three-steps" id="how-it-works">
+      <div class="container">
+        
+        <div class="section-heading text-center reveal-up">
+          <div class="eyebrow-pill eyebrow-pill-dark">How It Works</div>
+          <h2 class="section-title text-white">
+            Three steps. <em class="serif-italic text-cyan">Zero new habits.</em>
+          </h2>
+          <p class="section-subtitle text-muted">
+            You already save things online. Just save to AIDAN this time, so the right insight finds you at the right moment.
+          </p>
+        </div>
+
+        <div class="steps-three-grid">
+          
+          <div class="step-card tilt-card reveal-up">
+            <div class="step-num">01</div>
+            <h3>Save Anything</h3>
+            <p>Save any podcast, reel, post, or article straight to AIDAN. As simple as sending a message to a friend.</p>
+          </div>
+
+          <div class="step-card tilt-card reveal-up">
+            <div class="step-num">02</div>
+            <h3>AIDAN Ingests & Tags</h3>
+            <p>AIDAN reads the insight, skips the fluff, pulls out the key idea, and tags it to your relevant stage automatically.</p>
+          </div>
+
+          <div class="step-card tilt-card reveal-up">
+            <div class="step-num">03</div>
+            <h3>Surfaces When You Need It</h3>
+            <p>Months later, when you reach that execution milestone, it's all there waiting for the moment it matters.</p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 3: THREE THINGS. THAT'S IT. (PERFECTED WISPR THREE-CARD GRID) -->
+    <section class="section-three-things" id="three-things">
+      <div class="container">
+        
+        <div class="section-heading text-center reveal-up">
+          <div class="eyebrow-pill">Core Product Architecture</div>
+          <h2 class="section-title">
+            A second brain for every insight <br>
+            <span class="highlight-ultramarine">the universe hands you along the way.</span>
+          </h2>
+          <p class="section-subtitle">Three things. That's it.</p>
+        </div>
+
+        <!-- Perfected Wispr-Style 3-Card Architecture Grid -->
+        <div class="three-things-card-grid">
+          
+          <!-- Card 01 -->
+          <div class="architecture-card tilt-card reveal-up">
+            <div class="arch-card-top">
+              <span class="arch-number">01</span>
+              <span class="arch-tag">📬 Central Storage</span>
+            </div>
+            <h3 class="arch-title">one inbox, not seven.</h3>
+            <p class="arch-desc">
+              Everything you save from YouTube, LinkedIn, Instagram, podcasts, and articles ends up in one place. Not because AIDAN aggregates; because you share it there.
+            </p>
+            <div class="arch-card-footer">
+              <div class="arch-source-pills">
+                <span>YouTube</span>
+                <span>WhatsApp</span>
+                <span>PDFs</span>
+                <span>Podcasts</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 02 -->
+          <div class="architecture-card tilt-card reveal-up">
+            <div class="arch-card-top">
+              <span class="arch-number">02</span>
+              <span class="arch-tag">🏷️ Stage-Aware</span>
+            </div>
+            <h3 class="arch-title">tagged to your stage.</h3>
+            <p class="arch-desc">
+              AIDAN knows where your project is: Product, GTM, or Fundraise. It doesn't store insights in forgotten folders. It stores them against moments in the future.
+            </p>
+            <div class="arch-card-footer">
+              <div class="arch-stage-pill">
+                <span class="stage-dot-blue"></span> Product • GTM • Fundraise
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 03 -->
+          <div class="architecture-card tilt-card reveal-up">
+            <div class="arch-card-top">
+              <span class="arch-number">03</span>
+              <span class="arch-tag">⚡ Instant Synthesis</span>
+            </div>
+            <h3 class="arch-title">query when you're ready.</h3>
+            <p class="arch-desc">
+              When the moment comes, ask AIDAN or Claude what you've saved on any topic. Every insight you filed months ago surfaces instantly, organized by stage.
+            </p>
+            <div class="arch-card-footer">
+              <div class="arch-query-preview">
+                "What pricing strategy did Rahul suggest?"
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 4: FOREST EMERALD TEAL TICKER BANNER (#0D4B3E) -->
+    <section class="teal-ticker-section" id="integrations">
+      <div class="teal-ticker-header">
+        <h3 class="teal-ticker-title">Formatted & indexed for every platform you save from</h3>
+      </div>
+      <div class="marquee">
+        <div class="marquee-track">
+          <div class="marquee-item"><span class="active-dot"></span> ChatGPT</div>
+          <div class="marquee-item"><span class="active-dot"></span> Claude AI</div>
+          <div class="marquee-item"><span class="active-dot"></span> WhatsApp</div>
+          <div class="marquee-item"><span class="active-dot"></span> Gmail</div>
+          <div class="marquee-item"><span class="active-dot"></span> Google Drive</div>
+          <div class="marquee-item"><span class="active-dot"></span> YouTube Podcasts</div>
+          <div class="marquee-item"><span class="active-dot"></span> Instagram Reels</div>
+          <div class="marquee-item"><span class="active-dot"></span> Notion</div>
+          <div class="marquee-item"><span class="active-dot"></span> Slack</div>
+          <div class="marquee-item"><span class="active-dot"></span> Chrome Tabs</div>
+          <!-- Repeated for smooth loop -->
+          <div class="marquee-item"><span class="active-dot"></span> ChatGPT</div>
+          <div class="marquee-item"><span class="active-dot"></span> Claude AI</div>
+          <div class="marquee-item"><span class="active-dot"></span> WhatsApp</div>
+          <div class="marquee-item"><span class="active-dot"></span> Gmail</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: DEEP ULTRAMARINE BANNER (#0B2B9E) -->
+    <section class="ultramarine-banner-section">
+      <div class="container">
+        <div class="ultramarine-banner-box reveal-up">
+          <h2 class="ultramarine-banner-title">
+            10x your decision speed.<br>
+            <em class="serif-italic">Never lose an insight again.</em>
+          </h2>
+          <p class="ultramarine-banner-sub">
+            Every builder starts with one quiet idea. AIDAN wants to be on that journey with you.
+          </p>
+          <button class="pill-btn pill-btn-white pill-btn-lg trigger-waitlist-modal magnetic-btn">
+            Build Your Second Brain
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: LOVE LETTERS TO AIDAN (DARK TESTIMONIALS) -->
+    <section class="love-letters-section" id="testimonials">
+      <div class="container">
+        
+        <div class="section-heading text-center reveal-up">
+          <div class="doodle-starburst" aria-hidden="true">✦ ✦ ✦</div>
+          <h2 class="section-title text-white">
+            Love letters to <em class="serif-italic text-cyan">AIDAN</em>
+          </h2>
+          <p class="section-subtitle text-muted">
+            Used by founders, YC alumni, and product leaders to speed up their decision loop.
+          </p>
+        </div>
+
+        <div class="testimonials-grid">
+          
+          <div class="testimonial-card tilt-card reveal-up">
+            <p class="quote-text">
+              "I haven't searched through WhatsApp or Gmail in 3 months. I just ask AIDAN 'Where is the hiring deck Rahul sent?' and it cites the exact message and file instantly."
+            </p>
+            <div class="author-box">
+              <div class="author-avatar" style="background:#1652F0">SK</div>
+              <div class="author-info">
+                <strong>Siddharth K.</strong>
+                <span>Founder @ Stealth AI</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card tilt-card reveal-up">
+            <p class="quote-text">
+              "As a founder, I save 20 podcasts and Twitter threads a week. AIDAN is the first tool that actually brings those insights back when I'm working on GTM."
+            </p>
+            <div class="author-box">
+              <div class="author-avatar" style="background:#00D2B8; color:#131416">AR</div>
+              <div class="author-info">
+                <strong>Ananya R.</strong>
+                <span>Product Lead & Investor</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card tilt-card reveal-up">
+            <p class="quote-text">
+              "Connect once. Forget nothing. Find everything. It's the only AI tool that genuinely feels like expanding your own brain."
+            </p>
+            <div class="author-box">
+              <div class="author-avatar" style="background:#0B2B9E">MD</div>
+              <div class="author-info">
+                <strong>Marcus D.</strong>
+                <span>Serial Founder</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 7: FINAL CLIMAX CTA & WAITLIST (#cta) -->
+    <section class="final-cta-section" id="cta">
+      <div class="container text-center">
+        
+        <div class="final-hero-box reveal-up">
+          <h2 class="final-title">
+            Start <span class="heading-underline-wrap"><em class="serif-italic">remembering.</em></span>
+          </h2>
+          <p class="final-sub">
+            Join 3,400+ founders using AIDAN to never lose an insight again.
+          </p>
+
+          <form class="waitlist-inline-form" id="inline-waitlist-form">
+            <input type="email" class="waitlist-input" placeholder="Enter your email..." required>
+            <button type="submit" class="pill-btn pill-btn-ultramarine magnetic-btn">
+              Join the waitlist
+            </button>
+          </form>
+
+          <p class="privacy-note">
+            We promise we won't spam you. Trust us, we're equally annoyed by it. By joining the waitlist you agree to our Privacy Policy and Terms & Conditions.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-container">
+      
+      <div class="footer-brand-col">
+        <div class="footer-logo">
+          <img src="logo.png" alt="AIDAN Logo" class="footer-logo-img">
+          <span class="footer-logo-text">AIDAN</span>
+        </div>
+        <p class="footer-tagline">A small fire for founders.</p>
+      </div>
+
+      <div class="footer-links-col">
+        <div class="footer-nav-group">
+          <h4>Product</h4>
+          <a href="#how-it-works">How it works</a>
+          <a href="#three-things">Three things</a>
+          <a href="#integrations">Integrations</a>
+        </div>
+        <div class="footer-nav-group">
+          <h4>Company</h4>
+          <a href="#security">Privacy Policy</a>
+          <a href="#security">Terms & Conditions</a>
+          <a href="#cta">Join Waitlist</a>
+        </div>
+      </div>
+
+    </div>
+    <div class="container footer-bottom">
+      <p>© 2026 AIDAN Technologies Inc. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- WAITLIST MODAL OVERLAY -->
+  <div class="modal-backdrop" id="waitlist-modal" aria-hidden="true">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="modal-close" aria-label="Close modal">✕</button>
+      
+      <div class="modal-header">
+        <div class="modal-badge">⚡ Priority Access</div>
+        <h3 class="modal-title">Join the AIDAN Waitlist</h3>
+        <p class="modal-sub">Be among the first founders to experience perfect digital memory.</p>
+      </div>
+
+      <form class="modal-form" id="modal-waitlist-form">
+        <div class="form-group">
+          <label for="user-email">Work Email</label>
+          <input type="email" id="user-email" class="modal-input" placeholder="alex@startup.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="user-role">Your Role / Stage</label>
+          <select id="user-role" class="modal-select">
+            <option value="founder">Founder / Co-founder</option>
+            <option value="product">Product Lead</option>
+            <option value="investor">Investor / VC</option>
+            <option value="builder">Engineer / Builder</option>
+          </select>
+        </div>
+
+        <button type="submit" class="pill-btn pill-btn-ultramarine pill-btn-full magnetic-btn">
+          Claim Your Spot
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast" id="toast-notification">
+    <span class="toast-icon">🎉</span>
+    <span class="toast-message">You're on the waitlist! We'll notify you soon.</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

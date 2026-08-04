@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIDAN — Watching the Memory Engine Think</title>
+  <meta name="description" content="Watch AIDAN retrieve, connect, and synthesize memory across your digital workspace.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #F8F7F3;              /* Warm organic off-white canvas */
+      --surface: #FFFFFF;         /* Crisp white card surface */
+      --text: #111111;            /* Carbon text */
+      --text-sec: #666666;        /* Muted carbon body text */
+      --text-muted: #888888;      /* Meta labels */
+      --accent: #1E4FFF;          /* Electric Blue primary accent */
+      --accent-cyan: #20D9C7;     /* Cyan highlight dot */
+      --border: #E6E4DF;          /* Soft border line */
+      --border-hover: #C5C2B8;    /* Elevated border hover */
+      --serif: 'Instrument Serif', Georgia, serif;
+      --sans: 'Inter', -apple-system, sans-serif;
+      --outfit: 'Outfit', sans-serif;
+    }
+
+    html {
+      scroll-behavior: auto;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: var(--bg);
+      overflow-x: hidden;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #E0DDD5; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #C8C5BD; }
+
+    /* ─── Navigation ─── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      background: rgba(248, 247, 243, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1320px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: var(--outfit);
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-logo-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--text);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .nav-cta {
+      padding: 9px 20px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sec);
+      text-decoration: none;
+      transition: all 0.25s ease;
+      background: var(--surface);
+    }
+    .nav-cta:hover {
+      color: var(--text);
+      border-color: var(--text);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+    }
+
+    /* ─── Pinned Scroll Container ─── */
+    .thinking-scroll-wrap {
+      position: relative;
+      width: 100%;
+      height: 450vh; /* 450vh scroll headroom for scrubbing the full 9 phases */
+    }
+    .thinking-viewport {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    /* ─── Dynamic Header Typography ─── */
+    .story-header {
+      text-align: center;
+      max-width: 680px;
+      margin-top: 40px;
+      margin-bottom: 20px;
+      z-index: 20;
+    }
+    .story-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-sec);
+    }
+    .story-headline {
+      font-family: var(--serif);
+      font-size: clamp(38px, 4.5vw, 76px);
+      line-height: 1.04;
+      color: var(--text);
+      margin-bottom: 12px;
+      letter-spacing: -0.015em;
+    }
+    .story-headline em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .story-status {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sec);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 24px;
+    }
+    .pulse-dots span {
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 1.4s ease infinite;
+    }
+    .pulse-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .pulse-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse-dot { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+
+    /* ─── Visual Cognitive Canvas ─── */
+    .thinking-canvas {
+      position: relative;
+      width: 100%;
+      max-width: 1080px;
+      height: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Organic SVG Connection Lines Layer */
+    .connector-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .connector-path {
+      stroke: var(--accent);
+      stroke-width: 1.8px;
+      stroke-dasharray: 6 6;
+      fill: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    /* Phase 1 & 2: Clean Search Input */
+    .search-panel {
+      position: relative;
+      width: 100%;
+      max-width: 580px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 10px 36px -6px rgba(0, 0, 0, 0.06);
+      z-index: 30;
+      margin-bottom: 24px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .search-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .search-input-text {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text);
+      flex: 1;
+    }
+    .search-caret {
+      width: 2px;
+      height: 18px;
+      background: var(--accent);
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    .search-kbd {
+      font-size: 11px;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-weight: 600;
+      background: var(--bg);
+    }
+
+    /* Phase 7 & 8: Synthesized Answer Card */
+    .answer-card {
+      position: relative;
+      width: 100%;
+      max-width: 580px;
+      background: var(--surface);
+      border: 1px solid rgba(30, 79, 255, 0.25);
+      border-radius: 20px;
+      padding: 24px 28px;
+      box-shadow: 0 16px 48px -10px rgba(30, 79, 255, 0.12), 0 4px 20px rgba(0,0,0,0.03);
+      z-index: 40;
+      margin-bottom: 24px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .answer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .answer-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    .answer-brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(30, 79, 255, 0.2);
+    }
+    .answer-sentence {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text);
+      margin-bottom: 10px;
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    .answer-sentence.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .highlight-val {
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(30, 79, 255, 0.08);
+      padding: 2px 7px;
+      border-radius: 5px;
+      border: 1px solid rgba(30, 79, 255, 0.15);
+    }
+    .answer-sources {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .source-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-sec);
+    }
+    .source-pill-badge {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: white;
+    }
+
+    /* Phase 4: Staggered Memory Cards */
+    .workspace-cards-wrap {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .card {
+      position: absolute;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+      width: 240px;
+      box-shadow: 0 8px 30px -8px rgba(0,0,0,0.06);
+      will-change: transform, opacity;
+      user-select: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      z-index: 10;
+    }
+    .card.grounded {
+      border-color: var(--accent);
+      box-shadow: 0 10px 32px -6px rgba(30, 79, 255, 0.2);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .card-badge {
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+    .card-source {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      flex: 1;
+    }
+    .card-time { font-size: 10px; color: var(--text-muted); }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 3px;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-snippet {
+      font-size: 12px;
+      color: var(--text-sec);
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Phase 9: Final Resolution CTA */
+    .final-cta-wrap {
+      position: relative;
+      margin-top: 10px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(16px);
+      z-index: 50;
+    }
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 100px;
+      padding: 15px 32px;
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 6px 24px rgba(30, 79, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+    .cta-button:hover {
+      background: #1443EB;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(30, 79, 255, 0.4);
+    }
+
+    /* ─── Footer ─── */
+    .next-section {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .next-section h2 {
+      font-family: var(--serif);
+      font-size: 40px;
+      color: var(--text);
+    }
+
+    @media (max-width: 1024px) {
+      .thinking-canvas { height: 480px; }
+      .card { width: 210px; padding: 12px 14px; }
+      .connector-svg { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-badge">A</div>
+        AIDAN
+      </a>
+      <a href="#waitlist" class="nav-cta">Build Your Second Brain</a>
+    </div>
+  </nav>
+
+  <!-- Pinned Cognitive Thinking Scroll Container -->
+  <div class="thinking-scroll-wrap" id="thinking-scroll-wrap">
+    <div class="thinking-viewport">
+
+      <!-- Dynamic Header Typography -->
+      <div class="story-header">
+        <div class="story-eyebrow">
+          • Personal Memory Engine
+        </div>
+        <h1 class="story-headline" id="story-headline">
+          Watching AIDAN<br>
+          <em>think & reason.</em>
+        </h1>
+        <div class="story-status" id="story-status">
+          <span>Ready to search memories</span>
+        </div>
+      </div>
+
+      <!-- Cognitive Visual Canvas -->
+      <div class="thinking-canvas" id="thinking-canvas">
+
+        <!-- Organic Connector Lines -->
+        <svg class="connector-svg" viewBox="0 0 1080 520">
+          <!-- WhatsApp Card -> Answer Node -->
+          <path id="path-wa" class="connector-path" d="M 160,80 C 280,140 380,180 540,180" />
+          <!-- PDF Deck Card -> Answer Node -->
+          <path id="path-pdf" class="connector-path" d="M 920,80 C 800,140 700,180 540,180" />
+          <!-- Meeting Note Card -> Answer Node -->
+          <path id="path-meeting" class="connector-path" d="M 160,380 C 280,300 380,260 540,240" />
+          <!-- Voice Memo Card -> Answer Node -->
+          <path id="path-voice" class="connector-path" d="M 920,380 C 800,300 700,260 540,240" />
+        </svg>
+
+        <!-- Phase 1 & 2: Universal Search Bar -->
+        <div class="search-panel" id="search-panel">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          <span class="search-input-text" id="search-text-target">Ask AIDAN anything...</span>
+          <span class="search-caret"></span>
+          <span class="search-kbd">⌘K</span>
+        </div>
+
+        <!-- Phase 7 & 8: Synthesized Answer Card -->
+        <div class="answer-card" id="answer-card">
+          <div class="answer-header">
+            <div class="answer-brand">
+              <span class="answer-brand-dot"></span>
+              AIDAN Reasoning Synthesis
+            </div>
+            <span style="font-size:11px;color:var(--text-muted);">Verified across 3 sources</span>
+          </div>
+          
+          <div class="answer-sentence" id="sentence-1">
+            Rahul suggested targeting a <span class="highlight-val">$3M raise</span> for the upcoming Series A round.
+          </div>
+          <div class="answer-sentence" id="sentence-2">
+            The agreed valuation benchmark is <span class="highlight-val">$15M pre-money</span>.
+          </div>
+
+          <div class="answer-sources" id="answer-sources">
+            <div class="source-pill">
+              <div class="source-pill-badge" style="background:#25D366">W</div>
+              WhatsApp · Rahul
+            </div>
+            <div class="source-pill">
+              <div class="source-pill-badge" style="background:#FF6D00">P</div>
+              fundraising-deck-v3.pdf
+            </div>
+            <div class="source-pill">
+              <div class="source-pill-badge" style="background:#1A73E8">M</div>
+              Board Sync Q3
+            </div>
+          </div>
+        </div>
+
+        <!-- Staggered Memory Cards Canvas -->
+        <div class="workspace-cards-wrap" id="workspace-cards-wrap">
+          <!-- Injected via JS -->
+        </div>
+
+      </div>
+
+      <!-- Phase 9: Final Resolution CTA -->
+      <div class="final-cta-wrap" id="final-cta-wrap">
+        <a href="#waitlist" class="cta-button">
+          Build Your Second Brain
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 8h9M8.5 4l4 4-4 4"/></svg>
+        </a>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">End-to-end encrypted · Zero configuration required</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer Resolution -->
+  <section class="next-section">
+    <h2>Stop searching. Start remembering.</h2>
+  </section>
+
+  <script>
+  (function() {
+    'use strict';
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ════════════════════════════════════
+       Memory Cards Data
+    ════════════════════════════════════ */
+    const CARDS = [
+      { id:'wa',      source:'WhatsApp', color:'#25D366', badge:'W', title:'Rahul', snippet:'"We should target a $3M raise."', time:'2:34 PM' },
+      { id:'pdf',     source:'PDF Deck', color:'#FF6D00', badge:'P', title:'fundraising-deck-v3.pdf', snippet:'24 pages · $15M valuation', time:'Mon' },
+      { id:'meeting', source:'Meeting',  color:'#1A73E8', badge:'M', title:'Board Sync Q3 Notes', snippet:'Agreed on 100 enterprise pilots', time:'10:00 AM' },
+      { id:'voice',   source:'Voice',    color:'#8B5CF6', badge:'V', title:'Pricing call transcript', snippet:'0:47 duration · Audio recording', time:'1:20 PM' }
+    ];
+
+    /* Phase 4 Staggered Vectors (Offscreen Entrance Positions) */
+    const START_POS = [
+      { left: -260, top: 20,  rot: -8 }, // Top-Left vector
+      { left: 1100, top: 20,  rot: 8 },  // Top-Right vector
+      { left: -260, top: 320, rot: 6 },  // Bottom-Left vector
+      { left: 1100, top: 320, rot: -6 }  // Bottom-Right vector
+    ];
+
+    /* Phase 5 Settled Memory Network Coordinates */
+    const NETWORK_POS = [
+      { left: 40,  top: 40,  rot: -2 },
+      { left: 800, top: 40,  rot: 2 },
+      { left: 40,  top: 320, rot: 1.5 },
+      { left: 800, top: 320, rot: -1.5 }
+    ];
+
+    /* Phase 8 Grounded Evidence Positions (Underneath Answer Card) */
+    const GROUNDED_POS = [
+      { left: 40,  top: 140, rot: 0 },
+      { left: 800, top: 140, rot: 0 },
+      { left: 40,  top: 270, rot: 0 },
+      { left: 800, top: 270, rot: 0 }
+    ];
+
+    /* Render Memory Cards */
+    const container = document.getElementById('workspace-cards-wrap');
+    const cardEls = [];
+
+    CARDS.forEach((card, i) => {
+      const pos = START_POS[i];
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.id = `card-${card.id}`;
+      el.innerHTML = `
+        <div class="card-header">
+          <div class="card-badge" style="background:${card.color}">${card.badge}</div>
+          <span class="card-source">${card.source}</span>
+          <span class="card-time">${card.time}</span>
+        </div>
+        <div class="card-title">${card.title}</div>
+        <div class="card-snippet">${card.snippet}</div>
+      `;
+
+      gsap.set(el, {
+        left: pos.left + 'px',
+        top: pos.top + 'px',
+        rotation: pos.rot,
+        opacity: 0,
+        scale: 0.9
+      });
+
+      container.appendChild(el);
+      cardEls.push(el);
+    });
+
+    /* ════════════════════════════════════
+       Master Cognitive Scroll Timeline (9 Phases)
+    ════════════════════════════════════ */
+    if (window.innerWidth >= 1024) {
+      const searchPanel = document.getElementById('search-panel');
+      const searchTarget = document.getElementById('search-text-target');
+      const statusTarget = document.getElementById('story-status');
+      const answerCard = document.getElementById('answer-card');
+      const sentence1 = document.getElementById('sentence-1');
+      const sentence2 = document.getElementById('sentence-2');
+      const answerSources = document.getElementById('answer-sources');
+      const finalCtaWrap = document.getElementById('final-cta-wrap');
+      const paths = [
+        document.getElementById('path-wa'),
+        document.getElementById('path-pdf'),
+        document.getElementById('path-meeting'),
+        document.getElementById('path-voice')
+      ];
+
+      const mainTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#thinking-scroll-wrap',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1.2
+        }
+      });
+
+      // ─── PHASE 2: Natural Query Typing (0% -> 15% Scroll) ───
+      const fullQuery = "What did Rahul say about fundraising?";
+      mainTl.to({}, {
+        duration: 0.15,
+        onUpdate: function() {
+          const p = this.progress();
+          const charCount = Math.floor(p * fullQuery.length);
+          searchTarget.innerText = fullQuery.substring(0, charCount) || "Ask AIDAN anything...";
+          if (p > 0.1) {
+            statusTarget.innerHTML = 'Searching memories across connected tools<span class="pulse-dots"><span></span><span></span><span></span></span>';
+          }
+        }
+      }, 0);
+
+      // ─── PHASE 4: Staggered Source Arrival (15% -> 35% Scroll) ───
+      cardEls.forEach((el, i) => {
+        const netPos = NETWORK_POS[i];
+        mainTl.to(el, {
+          left: netPos.left + 'px',
+          top: netPos.top + 'px',
+          rotation: netPos.rot,
+          scale: 1.0,
+          opacity: 1,
+          duration: 0.2,
+          ease: 'power3.out'
+        }, 0.15 + i * 0.05);
+      });
+
+      // ─── PHASE 5: Organic Line Growth (35% -> 50% Scroll) ───
+      paths.forEach((path, i) => {
+        mainTl.to(path, {
+          opacity: 0.5,
+          duration: 0.15,
+          ease: 'sine.inOut'
+        }, 0.35 + i * 0.03);
+      });
+
+      // ─── PHASE 6: Reasoning Pause (50% -> 60% Scroll) ───
+      mainTl.to({}, {
+        duration: 0.1,
+        onUpdate: function() {
+          statusTarget.innerHTML = 'AIDAN reasoning across connected knowledge graph...';
+        }
+      }, 0.50);
+
+      // ─── PHASE 7: Progressive Sentence Synthesis (60% -> 80% Scroll) ───
+      // Reveal Answer Card
+      mainTl.to(answerCard, {
+        opacity: 1,
+        y: 0,
+        duration: 0.15,
+        ease: 'power3.out'
+      }, 0.60);
+
+      // Sentence 1 reveal
+      mainTl.to(sentence1, {
+        opacity: 1,
+        y: 0,
+        duration: 0.1,
+        onStart: () => sentence1.classList.add('visible')
+      }, 0.65);
+
+      // Sentence 2 reveal
+      mainTl.to(sentence2, {
+        opacity: 1,
+        y: 0,
+        duration: 0.1,
+        onStart: () => sentence2.classList.add('visible')
+      }, 0.72);
+
+      // Reveal source pills
+      mainTl.to(answerSources, {
+        opacity: 1,
+        duration: 0.1
+      }, 0.78);
+
+      // ─── PHASE 8: Evidence Alignment (80% -> 90% Scroll) ───
+      cardEls.forEach((el, i) => {
+        const groundPos = GROUNDED_POS[i];
+        mainTl.to(el, {
+          left: groundPos.left + 'px',
+          top: groundPos.top + 'px',
+          rotation: 0,
+          scale: 0.95,
+          borderColor: '#1E4FFF',
+          duration: 0.1,
+          ease: 'power2.inOut'
+        }, 0.80 + i * 0.02);
+      });
+
+      // ─── PHASE 9: Calm Resolution (90% -> 100% Scroll) ───
+      mainTl.to(finalCtaWrap, {
+        opacity: 1,
+        y: 0,
+        duration: 0.1,
+        ease: 'power3.out'
+      }, 0.90);
+
+      mainTl.to({}, {
+        duration: 0.1,
+        onUpdate: function() {
+          statusTarget.innerHTML = '<span style="color:#10B981;">✓ Verified across 3 connected sources</span>';
+        }
+      }, 0.92);
+
+    }
+
+  })();
+  </script>
+</body>
+</html>

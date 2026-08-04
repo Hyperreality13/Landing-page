@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIDAN — Premium Navigation System</title>
+  <meta name="description" content="Minimal, transparent-to-frosted-glass navigation experience for AIDAN.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #F8F7F3;              /* Warm organic off-white canvas */
+      --surface: #FFFFFF;         /* Crisp white surface */
+      --text: #111111;            /* Carbon text */
+      --text-sec: #666666;        /* Muted carbon body text */
+      --text-muted: #888888;      /* Meta labels */
+      --accent: #1E4FFF;          /* Electric Blue primary accent */
+      --border: #E6E4DF;          /* Soft border line */
+      --serif: 'Instrument Serif', Georgia, serif;
+      --sans: 'Inter', -apple-system, sans-serif;
+      --outfit: 'Outfit', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: var(--bg);
+      min-height: 250vh; /* Extra height to test scroll transition */
+    }
+
+    /* ─── Premium Navigation System ─── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      /* Initial Transparent State */
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: none;
+      transition: background 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  backdrop-filter 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Scrolled Frosted Glass State */
+    .nav.scrolled {
+      background: rgba(248, 247, 243, 0.85);
+      border-bottom-color: rgba(230, 228, 223, 0.8);
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .nav-inner {
+      max-width: 1320px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Brand Logo */
+    .nav-logo {
+      font-family: var(--outfit);
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-logo-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--text);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      transition: transform 0.3s ease;
+    }
+    .nav-logo:hover .nav-logo-badge {
+      transform: scale(1.05);
+    }
+
+    /* Center Navigation Links (Desktop) */
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-link {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-sec);
+      text-decoration: none;
+      position: relative;
+      padding: 6px 0;
+      transition: color 0.25s ease;
+    }
+    .nav-link:hover {
+      color: var(--text);
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.25s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Right Action Pill CTA */
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 100px;
+      background: var(--accent);
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(30, 79, 255, 0.25);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .nav-cta:hover {
+      background: #1443EB;
+      box-shadow: 0 6px 22px rgba(30, 79, 255, 0.38);
+      transform: translateY(-1px);
+    }
+    .nav-cta svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.2s ease;
+    }
+    .nav-cta:hover svg {
+      transform: translateX(3px);
+    }
+
+    /* Mobile Hamburger Trigger */
+    .mobile-trigger {
+      display: none;
+      background: none;
+      border: none;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      z-index: 1010;
+    }
+    .mobile-trigger span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .mobile-trigger.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .mobile-trigger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .mobile-trigger.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* Mobile Drawer Overlay */
+    .mobile-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1005;
+      background: rgba(248, 247, 243, 0.98);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 32px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+    .mobile-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .mobile-link {
+      font-family: var(--serif);
+      font-size: 36px;
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.25s ease;
+    }
+    .mobile-link:hover {
+      color: var(--accent);
+    }
+
+    /* Demo Hero Section for Testing Scroll */
+    .demo-hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 20px;
+    }
+    .demo-headline {
+      font-family: var(--serif);
+      font-size: clamp(48px, 6vw, 84px);
+      line-height: 1.04;
+      margin-bottom: 24px;
+    }
+    .demo-headline em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .demo-sub {
+      font-size: 17px;
+      color: var(--text-sec);
+      max-width: 440px;
+      line-height: 1.6;
+    }
+    .scroll-hint {
+      margin-top: 48px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .scroll-hint-arrow {
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(6px); }
+      60% { transform: translateY(3px); }
+    }
+
+    /* ─── Responsive Breakpoints ─── */
+    @media (max-width: 860px) {
+      .nav-inner { padding: 0 20px; }
+      .nav-menu { display: none; }
+      .nav-actions { display: none; }
+      .mobile-trigger { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <!-- Brand Logo -->
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-badge">A</div>
+        AIDAN
+      </a>
+
+      <!-- Center Links (Desktop) -->
+      <ul class="nav-menu">
+        <li><a href="#product" class="nav-link">Product</a></li>
+        <li><a href="#how-it-works" class="nav-link">How it Works</a></li>
+        <li><a href="#security" class="nav-link">Security</a></li>
+        <li><a href="#pricing" class="nav-link">Pricing</a></li>
+      </ul>
+
+      <!-- Right Action CTA -->
+      <div class="nav-actions">
+        <a href="#waitlist" class="nav-cta">
+          Build Your Second Brain
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 8h9M8.5 4l4 4-4 4"/></svg>
+        </a>
+      </div>
+
+      <!-- Mobile Trigger -->
+      <button class="mobile-trigger" id="mobile-trigger" aria-label="Toggle Navigation Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Overlay Drawer -->
+  <div class="mobile-overlay" id="mobile-overlay">
+    <a href="#product" class="mobile-link mobile-nav-close">Product</a>
+    <a href="#how-it-works" class="mobile-link mobile-nav-close">How it Works</a>
+    <a href="#security" class="mobile-link mobile-nav-close">Security</a>
+    <a href="#pricing" class="mobile-link mobile-nav-close">Pricing</a>
+    <a href="#waitlist" class="nav-cta mobile-nav-close" style="font-size:15px;padding:14px 32px;margin-top:16px;">
+      Build Your Second Brain
+    </a>
+  </div>
+
+  <!-- Demo Content to Test Scroll Transition -->
+  <section class="demo-hero">
+    <h1 class="demo-headline">
+      Everything you've ever saved.<br>
+      <em>Finally usable.</em>
+    </h1>
+    <p class="demo-sub">
+      Scroll down to test the navigation bar transition from transparent to frosted glass.
+    </p>
+    <div class="scroll-hint">
+      Scroll down <span class="scroll-hint-arrow">↓</span>
+    </div>
+  </section>
+
+  <section style="height: 100vh; padding: 120px 40px; text-align: center;">
+    <h2 style="font-family: var(--serif); font-size: 48px; margin-bottom: 16px;">Frosted Glass Nav Active</h2>
+    <p style="color: var(--text-sec); font-size: 16px;">Notice how the background turns into a soft warm glass with backdrop blur.</p>
+  </section>
+
+  <script>
+  (function() {
+    'use strict';
+
+    const nav = document.getElementById('nav');
+    const mobileTrigger = document.getElementById('mobile-trigger');
+    const mobileOverlay = document.getElementById('mobile-overlay');
+    const mobileNavCloses = document.querySelectorAll('.mobile-nav-close');
+
+    /* ─── Scroll Listener for Frosted Glass Transition ─── */
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    }, { passive: true });
+
+    /* ─── Mobile Drawer Toggle ─── */
+    mobileTrigger.addEventListener('click', () => {
+      mobileTrigger.classList.toggle('active');
+      mobileOverlay.classList.toggle('active');
+      if (mobileOverlay.classList.contains('active')) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    });
+
+    mobileNavCloses.forEach(el => {
+      el.addEventListener('click', () => {
+        mobileTrigger.classList.remove('active');
+        mobileOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+
+  })();
+  </script>
+</body>
+</html>

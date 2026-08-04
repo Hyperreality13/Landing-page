@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIDAN — Founder Scenarios Dashboard UI</title>
+  <meta name="description" content="Production-grade AIDAN Dashboard UI featuring interactive Founder Scenarios: Fundraising, Hiring, and Go-to-market.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #F8F7F3;              /* Warm organic off-white canvas */
+      --surface: #FFFFFF;         /* Crisp white card surface */
+      --surface-hover: #F3F1EA;   /* Subtle row hover */
+      --text: #111111;            /* Carbon text */
+      --text-sec: #666666;        /* Muted carbon body text */
+      --text-muted: #888888;      /* Meta labels */
+      --accent: #1E4FFF;          /* Electric Blue primary accent */
+      --accent-light: rgba(30, 79, 255, 0.08);
+      --border: #E6E4DF;          /* Soft border line */
+      --border-subtle: #F0EEEA;   /* Minimal inner divider */
+      --sans: 'Inter', -apple-system, sans-serif;
+      --serif: 'Instrument Serif', Georgia, serif;
+      --outfit: 'Outfit', sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #E0DDD5; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #C8C5BD; }
+
+    /* ─── Main 3-Pane Application Shell ─── */
+    .app-shell {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ─── Left Sidebar Pane (240px) ─── */
+    .sidebar {
+      width: 240px;
+      height: 100%;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px 14px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .sidebar-header:hover { background: var(--bg); }
+    .sidebar-logo-badge {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      background: var(--text);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--outfit);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .sidebar-brand-title {
+      font-family: var(--outfit);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-group {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 24px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sec);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .nav-item:hover {
+      background: var(--bg);
+      color: var(--text);
+    }
+    .nav-item.active {
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .nav-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-item-icon {
+      width: 16px;
+      height: 16px;
+      color: currentColor;
+    }
+    .nav-item-count {
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(0,0,0,0.04);
+      padding: 2px 6px;
+      border-radius: 100px;
+    }
+
+    .sync-status-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .sync-status-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .sync-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10B981;
+    }
+    .sync-status-body {
+      font-size: 12px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ─── Center Workspace Pane ─── */
+    .workspace {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    /* Founder Scenario Switcher Bar */
+    .scenario-switcher-bar {
+      padding: 12px 28px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .scenario-switcher-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+    .scenario-tabs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .scenario-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sec);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .scenario-tab:hover {
+      border-color: var(--text);
+      color: var(--text);
+    }
+    .scenario-tab.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+      box-shadow: 0 4px 14px rgba(30, 79, 255, 0.25);
+    }
+
+    /* Universal Search Header */
+    .search-header {
+      padding: 16px 28px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .search-input-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .search-input-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 6px 20px rgba(30, 79, 255, 0.12);
+    }
+    .search-input-icon {
+      width: 18px;
+      height: 18px;
+      color: var(--accent);
+    }
+    .search-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 15px;
+      font-family: var(--sans);
+      color: var(--text);
+      flex: 1;
+    }
+
+    /* Timeline & Cards Main Scroll Area */
+    .workspace-body {
+      flex: 1;
+      padding: 24px 28px;
+      overflow-y: auto;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .workspace-body.transitioning {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    /* Memory Timeline Bar */
+    .timeline-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .timeline-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+    .timeline-pill {
+      padding: 4px 12px;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sec);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .timeline-pill.active {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Knowledge Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .knowledge-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.02);
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .knowledge-card:hover, .knowledge-card.selected {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(30, 79, 255, 0.12);
+    }
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .card-app-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-sec);
+    }
+    .badge-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: white;
+    }
+    .card-time { font-size: 11px; color: var(--text-muted); }
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.35;
+    }
+    .card-snippet {
+      font-size: 12px;
+      color: var(--text-sec);
+      line-height: 1.45;
+    }
+
+    /* ─── Right Context Inspector Pane ─── */
+    .context-pane {
+      width: 340px;
+      height: 100%;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+      transition: opacity 0.2s ease;
+    }
+    .context-pane.transitioning {
+      opacity: 0;
+    }
+
+    .pane-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .pane-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+    .pane-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .synthesized-result-box {
+      background: var(--bg);
+      border: 1px solid rgba(30, 79, 255, 0.2);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .result-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .result-text {
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .result-text strong {
+      color: var(--accent);
+      background: rgba(30, 79, 255, 0.1);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .sources-list-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .source-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      margin-bottom: 8px;
+      transition: border-color 0.2s ease;
+    }
+    .source-item:hover { border-color: var(--accent); }
+    .source-item-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .source-item-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .source-item-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .action-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Shell -->
+  <div class="app-shell">
+
+    <!-- 1. Left Sidebar Pane -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-header">
+          <div class="sidebar-logo-badge">A</div>
+          <span class="sidebar-brand-title">Founder Brain</span>
+        </div>
+
+        <ul class="nav-group">
+          <li>
+            <a href="#" class="nav-item active">
+              <span class="nav-item-left">
+                <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+                Universal Search
+              </span>
+              <span class="nav-item-count">⌘K</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="nav-item">
+              <span class="nav-item-left">
+                <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                Memory Timeline
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="nav-item">
+              <span class="nav-item-left">
+                <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Knowledge Cards
+              </span>
+              <span class="nav-item-count">18.4k</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="nav-item">
+              <span class="nav-item-left">
+                <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                Connected Apps
+              </span>
+              <span class="nav-item-count">8</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sync-status-card">
+        <div class="sync-status-header">
+          <span class="sync-dot"></span> Real-time Sync
+        </div>
+        <div class="sync-status-body">18,420 memories active</div>
+      </div>
+    </aside>
+
+    <!-- 2. Center Workspace Pane -->
+    <main class="workspace">
+      
+      <!-- Interactive Founder Scenario Switcher Bar -->
+      <div class="scenario-switcher-bar">
+        <span class="scenario-switcher-label">Founder Scenario Switcher:</span>
+        <div class="scenario-tabs">
+          <button class="scenario-tab active" data-scenario="fundraising">
+            💰 Fundraising
+          </button>
+          <button class="scenario-tab" data-scenario="hiring">
+            👥 Hiring
+          </button>
+          <button class="scenario-tab" data-scenario="gtm">
+            🚀 Go-to-market
+          </button>
+        </div>
+      </div>
+
+      <!-- Universal Search Header -->
+      <div class="search-header">
+        <div class="search-input-wrap">
+          <svg class="search-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          <input type="text" class="search-input" id="search-input" value="What did Rahul say about fundraising?">
+        </div>
+      </div>
+
+      <!-- Main Scroll Body -->
+      <div class="workspace-body" id="workspace-body">
+        
+        <!-- Timeline Rail -->
+        <div class="timeline-bar">
+          <span class="timeline-label">Time Filter:</span>
+          <button class="timeline-pill active">Today</button>
+          <button class="timeline-pill">Yesterday</button>
+          <button class="timeline-pill">This Week</button>
+          <button class="timeline-pill">July 2026</button>
+        </div>
+
+        <!-- Knowledge Cards Grid -->
+        <div class="cards-grid" id="cards-grid">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- 3. Right Context Inspector Pane -->
+    <aside class="context-pane" id="context-pane">
+      <div class="pane-header">
+        <span class="pane-title">Context Inspector</span>
+        <span class="pane-badge" id="scenario-badge">Fundraising Scenario</span>
+      </div>
+
+      <!-- Synthesized Result -->
+      <div class="synthesized-result-box">
+        <div class="result-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          Synthesized Answer
+        </div>
+        <div class="result-text" id="result-text-target">
+          Rahul suggested targeting a <strong>$3M raise</strong> at a <strong>$15M valuation</strong> for the upcoming Series A round.
+        </div>
+      </div>
+
+      <!-- Source Attribution List -->
+      <div class="sources-list-title">Source Attribution (<span id="sources-count">4</span> Verified)</div>
+
+      <div id="sources-list-container">
+        <!-- Dynamically populated via JS -->
+      </div>
+
+      <button class="action-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Open Origin App
+      </button>
+
+      <button class="action-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy Citation Context
+      </button>
+
+    </aside>
+
+  </div>
+
+  <script>
+  (function() {
+    'use strict';
+
+    /* ════════════════════════════════════
+       3 Founder Scenario Datasets
+    ════════════════════════════════════ */
+    const SCENARIOS = {
+      fundraising: {
+        badge: "Fundraising Scenario",
+        query: "What did Rahul say about fundraising?",
+        answerHTML: 'Rahul suggested targeting a <strong>$3M raise</strong> at a <strong>$15M valuation</strong> for the upcoming Series A round.',
+        sourcesCount: 4,
+        sources: [
+          { app: 'WhatsApp', icon: 'W', color: '#25D366', title: 'WhatsApp · Rahul', sub: 'Today at 2:34 PM' },
+          { app: 'PDF Deck', icon: 'P', color: '#FF6D00', title: 'fundraising-deck-v3.pdf', sub: 'Mon at 11:20 AM' },
+          { app: 'Meeting',  icon: 'M', color: '#1A73E8', title: 'Board Sync Q3 Notes', sub: 'Tue at 10:00 AM' },
+          { app: 'Chrome',   icon: 'C', color: '#4285F4', title: 'Series A Benchmarks', sub: '2 hrs ago' }
+        ],
+        cards: [
+          { app: 'WhatsApp', color: '#25D366', badge: 'W', title: 'Rahul', snippet: '"We should target a $3M raise at $15M pre-money valuation."', time: '2:34 PM', selected: true },
+          { app: 'PDF Deck', color: '#FF6D00', badge: 'P', title: 'fundraising-deck-v3.pdf', snippet: '24 pages · Financial projections and $15M valuation benchmark', time: 'Mon 11:20 AM' },
+          { app: 'Meeting Note', color: '#1A73E8', badge: 'M', title: 'Board Sync Q3 Notes', snippet: 'Agreed on targeting 100 enterprise pilots before Series A round', time: 'Tue 10:00 AM' },
+          { app: 'Chrome Tab', color: '#4285F4', badge: 'C', title: 'Series A Benchmarks', snippet: 'SaaS market research report & valuation benchmarks', time: '2 hrs ago' }
+        ]
+      },
+
+      hiring: {
+        badge: "Hiring Scenario",
+        query: "What are the candidate concerns for VP of Engineering?",
+        answerHTML: 'Marcus Vance requested a <strong>$240k base salary</strong> and <strong>0.8% equity grant</strong>, emphasizing full remote work flexibility.',
+        sourcesCount: 4,
+        sources: [
+          { app: 'LinkedIn', icon: 'in', color: '#0A66C2', title: 'LinkedIn · Marcus Vance', sub: 'Yesterday at 4:15 PM' },
+          { app: 'PDF Report', icon: 'P', color: '#FF6D00', title: 'vp-eng-comp-benchmark.pdf', sub: '3 days ago' },
+          { app: 'Gmail', icon: 'M', color: '#EA4335', title: 'Debrief · CTO Feedback', sub: 'Tue at 3:00 PM' },
+          { app: 'Slack', icon: '#', color: '#4A154B', title: '#hiring-engineering', sub: '1 hr ago' }
+        ],
+        cards: [
+          { app: 'LinkedIn', color: '#0A66C2', badge: 'in', title: 'Marcus Vance', snippet: '"Messaging re: compensation expectations & remote work flexibility"', time: 'Yesterday 4:15 PM', selected: true },
+          { app: 'PDF Report', color: '#FF6D00', badge: 'P', title: 'vp-eng-comp-benchmark.pdf', snippet: '8 pages · Executive compensation benchmarks 2026', time: '3 days ago' },
+          { app: 'Gmail', color: '#EA4335', badge: 'M', title: 'Debrief · CTO Feedback', snippet: 'Technical interview debrief and leadership assessment notes', time: 'Tue 3:00 PM' },
+          { app: 'Slack', color: '#4A154B', badge: '#', title: '#hiring-engineering', snippet: 'Discussion on candidate offer package terms and start date', time: '1 hr ago' }
+        ]
+      },
+
+      gtm: {
+        badge: "Go-to-Market Scenario",
+        query: "What is our Q4 GTM pricing & retention strategy?",
+        answerHTML: 'Targeting a <strong>$49/mo Pro tier</strong> with a PLG retention benchmark set at <strong>85%</strong> and <strong>>120% NDR</strong>.',
+        sourcesCount: 4,
+        sources: [
+          { app: 'ChatGPT', icon: 'G', color: '#10A37F', title: 'ChatGPT · Tiering Strategy', sub: 'Yesterday at 6:00 PM' },
+          { app: 'Voice Memo', icon: 'V', color: '#8B5CF6', title: 'Pricing Call Transcript', sub: '3 days ago' },
+          { app: 'Notion', icon: 'N', color: '#111111', title: 'Q4 Launch Roadmap', sub: 'Mon at 9:30 AM' },
+          { app: 'Chrome Tab', icon: 'C', color: '#4285F4', title: 'Competitor Tier Analysis', sub: '4 hrs ago' }
+        ],
+        cards: [
+          { app: 'ChatGPT', color: '#10A37F', badge: 'G', title: 'GTM Tiering Strategy', snippet: 'PLG pricing model tiers and self-serve onboarding flow', time: 'Yesterday 6:00 PM', selected: true },
+          { app: 'Voice Memo', color: '#8B5CF6', badge: 'V', title: 'Pricing Call Transcript', snippet: '0:47 duration audio recording · Tier discussion', time: '3 days ago' },
+          { app: 'Notion Page', color: '#111111', badge: 'N', title: 'Q4 Launch Roadmap', snippet: 'Product roadmap, launch checklist, and marketing assets', time: 'Mon 9:30 AM' },
+          { app: 'Chrome Tab', color: '#4285F4', badge: 'C', title: 'Competitor Tier Analysis', snippet: 'Tab · 4 min read · Tier comparison matrix', time: '4 hrs ago' }
+        ]
+      }
+    };
+
+    /* Elements */
+    const searchInput = document.getElementById('search-input');
+    const cardsGrid = document.getElementById('cards-grid');
+    const workspaceBody = document.getElementById('workspace-body');
+    const contextPane = document.getElementById('context-pane');
+    const scenarioBadge = document.getElementById('scenario-badge');
+    const resultTextTarget = document.getElementById('result-text-target');
+    const sourcesCountTarget = document.getElementById('sources-count');
+    const sourcesContainer = document.getElementById('sources-list-container');
+    const tabs = document.querySelectorAll('.scenario-tab');
+
+    /* Render Scenario Function */
+    function renderScenario(scenarioKey) {
+      const data = SCENARIOS[scenarioKey];
+      if (!data) return;
+
+      // Add smooth transition classes
+      workspaceBody.classList.add('transitioning');
+      contextPane.classList.add('transitioning');
+
+      setTimeout(() => {
+        // Update Search & Inspector Text
+        searchInput.value = data.query;
+        scenarioBadge.innerText = data.badge;
+        resultTextTarget.innerHTML = data.answerHTML;
+        sourcesCountTarget.innerText = data.sourcesCount;
+
+        // Render Cards Grid
+        cardsGrid.innerHTML = data.cards.map(card => `
+          <div class="knowledge-card ${card.selected ? 'selected' : ''}">
+            <div class="card-top">
+              <div class="card-app-badge">
+                <div class="badge-icon" style="background:${card.color}">${card.badge}</div>
+                ${card.app}
+              </div>
+              <span class="card-time">${card.time}</span>
+            </div>
+            <div class="card-title">${card.title}</div>
+            <div class="card-snippet">${card.snippet}</div>
+          </div>
+        `).join('');
+
+        // Render Sources List
+        sourcesContainer.innerHTML = data.sources.map(src => `
+          <div class="source-item">
+            <div class="source-item-left">
+              <div class="badge-icon" style="background:${src.color}">${src.icon}</div>
+              <div>
+                <div class="source-item-title">${src.title}</div>
+                <div class="source-item-sub">${src.sub}</div>
+              </div>
+            </div>
+            <span style="font-size:11px;color:var(--accent);font-weight:600;">View</span>
+          </div>
+        `).join('');
+
+        // Fade in
+        workspaceBody.classList.remove('transitioning');
+        contextPane.classList.remove('transitioning');
+
+      }, 150);
+    }
+
+    /* Scenario Tab Event Listeners */
+    tabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        e.preventDefault();
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        const key = tab.getAttribute('data-scenario');
+        renderScenario(key);
+      });
+    });
+
+    // Initial render
+    renderScenario('fundraising');
+
+  })();
+  </script>
+</body>
+</html>

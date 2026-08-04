@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIDAN — Master Continuous Experience</title>
+  <meta name="description" content="One continuous product story. AIDAN is a personal memory layer for founders. Connect once. Forget nothing. Find everything.">
+
+  <!-- Preconnect for Fast Font Loading -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #F8F7F3;              /* Warm organic paper canvas */
+      --surface: #FFFFFF;         /* Crisp white surface card */
+      --text: #111111;            /* Carbon text */
+      --text-sec: #666666;        /* Muted carbon body text */
+      --text-muted: #888888;      /* Meta labels */
+      --accent: #1E4FFF;          /* Electric Blue primary accent */
+      --accent-hover: #1443EB;    /* Deep Electric Blue hover */
+      --accent-cyan: #20D9C7;     /* Cyan status indicator */
+      --border: rgba(230, 228, 223, 0.9); /* Hair-line organic border */
+      --border-hover: rgba(30, 79, 255, 0.25);
+      --serif: 'Instrument Serif', Georgia, serif;
+      --sans: 'Inter', -apple-system, sans-serif;
+      --outfit: 'Outfit', sans-serif;
+      
+      /* Animation Timing Hierarchy Tokens */
+      --dur-primary: 0.75s;       /* Primary Major Scene Morphs (750ms) */
+      --dur-secondary: 0.40s;     /* Secondary Card & Panel Reveals (400ms) */
+      --dur-micro: 0.20s;         /* Micro Hover & Magnetic Physics (200ms) */
+      --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    html {
+      scroll-behavior: auto;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: var(--bg);
+      overflow-x: hidden;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #E0DDD5; border-radius: 4px; }
+
+    /* Top Progress Bar */
+    .scroll-progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2px;
+      width: 0%;
+      background: var(--accent);
+      z-index: 1000;
+      will-change: width;
+    }
+
+    /* Navigation Bar */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 900;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      background: rgba(248, 247, 243, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition: background var(--dur-secondary) var(--ease-apple),
+                  border-color var(--dur-secondary) var(--ease-apple);
+    }
+    .nav-inner {
+      max-width: 1320px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: var(--outfit);
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-logo-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--text);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    /* ─── CONTINUOUS MASTER TRACK CONTAINER ─── */
+    .master-experience-track {
+      position: relative;
+      width: 100%;
+      height: 600vh;
+    }
+
+    .master-viewport {
+      position: sticky;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding-top: 72px;
+    }
+
+    /* Dynamic Stage Container */
+    .stage-container {
+      position: relative;
+      width: 100%;
+      max-width: 1280px;
+      height: 640px;
+      contain: layout style;
+    }
+
+    /* SVG Neural Connection Lines */
+    .svg-neural-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .neural-path {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 2px;
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+      opacity: 0.3;
+      will-change: stroke-dashoffset;
+    }
+
+    /* ─── SCENE 1: Hero Workspace ─── */
+    .hero-scene {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      gap: 64px;
+      z-index: 10;
+      will-change: transform, opacity;
+    }
+    .hero-left-content { flex: 0 0 44%; max-width: 44%; }
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(48px, 5.2vw, 84px);
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+    .hero-title em { font-style: italic; color: var(--accent); }
+    .hero-body {
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--text-sec);
+      margin-bottom: 32px;
+    }
+
+    /* Magnetic CTA Button */
+    .cta-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent);
+      color: white;
+      border-radius: 100px;
+      padding: 16px 32px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(30,79,255,0.25);
+      transition: background var(--dur-micro) var(--ease-apple),
+                  box-shadow var(--dur-micro) var(--ease-apple),
+                  transform var(--dur-micro) var(--ease-spring);
+    }
+    .cta-primary:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 8px 28px rgba(30,79,255,0.38);
+    }
+
+    /* ─── SCENE 2: Integrations Grid ─── */
+    .integrations-scene {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      align-content: center;
+      z-index: 15;
+      opacity: 0;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    /* ─── SCENE 3 & 4: AIDAN Product Dashboard ─── */
+    .dashboard-scene {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate3d(-50%, -50%, 0) scale3d(0.88, 0.88, 1);
+      width: 100%;
+      max-width: 1100px;
+      height: 540px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px -10px rgba(0,0,0,0.08);
+      display: flex;
+      overflow: hidden;
+      z-index: 25;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    /* Dashboard Sidebar */
+    .dash-sidebar {
+      width: 220px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .dash-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sec);
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .dash-nav-item.active {
+      background: rgba(30,79,255,0.08);
+      color: var(--accent);
+    }
+
+    /* Dashboard Main Workspace */
+    .dash-workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+    }
+    .dash-scenario-bar {
+      padding: 10px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .scenario-tab {
+      padding: 4px 12px;
+      border-radius: 100px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-sec);
+      cursor: pointer;
+      transition: all var(--dur-micro) var(--ease-apple);
+    }
+    .scenario-tab.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .dash-body {
+      flex: 1;
+      padding: 16px 20px;
+      overflow-y: auto;
+    }
+    .dash-search-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 13px;
+      margin-bottom: 14px;
+      outline: none;
+    }
+
+    /* ─── SCENE 5: Testimonial Cards ─── */
+    .testimonials-overlay-scene {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      z-index: 35;
+      opacity: 0;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+    .trust-card {
+      width: 320px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 16px 40px -10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* ─── SCENE 6: Final Climax Resolution ─── */
+    .climax-scene {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 40;
+      opacity: 0;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+    .climax-headline {
+      font-family: var(--serif);
+      font-size: clamp(56px, 7.5vw, 108px);
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+    .climax-headline em { font-style: italic; color: var(--accent); }
+
+    /* Common Card Styling */
+    .app-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.03);
+      transition: transform var(--dur-secondary) var(--ease-apple),
+                  border-color var(--dur-secondary) var(--ease-apple),
+                  box-shadow var(--dur-secondary) var(--ease-apple);
+    }
+    .app-card:hover {
+      transform: translate3d(0, -4px, 0);
+      border-color: var(--border-hover);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Progress Bar -->
+  <div class="scroll-progress-bar" id="scroll-progress-bar"></div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-badge">A</div>
+        AIDAN
+      </a>
+      <span style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;">Master Continuous Story</span>
+    </div>
+  </nav>
+
+  <!-- 600vh Continuous Master Scroll Track -->
+  <div class="master-experience-track" id="master-track">
+    <div class="master-viewport">
+      <div class="stage-container" id="stage-container">
+
+        <!-- SVG Neural Connection Paths -->
+        <svg class="svg-neural-layer" viewBox="0 0 1280 640">
+          <path id="neural-path-1" class="neural-path" d="M 150 180 C 400 200, 550 250, 720 320"/>
+          <path id="neural-path-2" class="neural-path" d="M 980 140 C 820 200, 750 260, 720 320"/>
+          <path id="neural-path-3" class="neural-path" d="M 220 460 C 420 420, 580 380, 720 320"/>
+        </svg>
+
+        <!-- SCENE 1: Hero Workspace -->
+        <div class="hero-scene" id="hero-scene">
+          <div class="hero-left-content">
+            <h1 class="hero-title">The Personal<br>Memory Layer.<br><em>Forget nothing.</em></h1>
+            <p class="hero-body">AIDAN silently connects your chats, documents, voice notes, and browser tabs—so context is never lost.</p>
+            <a href="#waitlist" class="cta-primary">Build Your Second Brain →</a>
+          </div>
+
+          <!-- Connected Workspace Cards -->
+          <div style="flex:1;position:relative;height:500px;" id="hero-workspace-right">
+            <div class="app-card" id="detach-card-1" style="position:absolute;left:20px;top:40px;width:280px;">
+              <div style="font-size:11px;font-weight:700;color:#25D366;margin-bottom:4px;">WHATSAPP · RAHUL</div>
+              <div style="font-size:13px;font-weight:600;">"Target $3M raise at $15M valuation"</div>
+            </div>
+            <div class="app-card" id="detach-card-2" style="position:absolute;left:180px;top:140px;width:280px;">
+              <div style="font-size:11px;font-weight:700;color:#FF6D00;margin-bottom:4px;">PDF DECK</div>
+              <div style="font-size:13px;font-weight:600;">fundraising-deck-v3.pdf</div>
+            </div>
+            <div class="app-card" id="detach-card-3" style="position:absolute;left:60px;top:260px;width:280px;">
+              <div style="font-size:11px;font-weight:700;color:#1A73E8;margin-bottom:4px;">MEETING NOTE</div>
+              <div style="font-size:13px;font-weight:600;">Board Sync Q3 Notes</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCENE 2: 8-App Integrations Grid -->
+        <div class="integrations-scene" id="integrations-scene">
+          <div class="app-card"><div style="font-weight:700;margin-bottom:4px;">ChatGPT</div><div style="font-size:12px;color:var(--accent);">1,420 threads</div></div>
+          <div class="app-card"><div style="font-weight:700;margin-bottom:4px;">Claude</div><div style="font-size:12px;color:var(--accent);">840 threads</div></div>
+          <div class="app-card"><div style="font-weight:700;margin-bottom:4px;">Chrome</div><div style="font-size:12px;color:var(--accent);">3,200 tabs</div></div>
+          <div class="app-card"><div style="font-weight:700;margin-bottom:4px;">LinkedIn</div><div style="font-size:12px;color:var(--accent);">410 posts</div></div>
+          <div class="app-card"><div style="font-weight:700;margin-bottom:4px;">Slack</div><div style="font-size:12px;color:var(--accent);">5,100 messages</div></div>
+          <div class="app-card"><div style="font-weight:700;margin-bottom:4px;">Gmail</div><div style="font-size:12px;color:var(--accent);">2,640 emails</div></div>
+          <div class="app-card"><div style="font-weight:700;margin-bottom:4px;">Google Drive</div><div style="font-size:12px;color:var(--accent);">640 docs</div></div>
+          <div class="app-card"><div style="font-weight:700;margin-bottom:4px;">WhatsApp</div><div style="font-size:12px;color:var(--accent);">8,900 chats</div></div>
+        </div>
+
+        <!-- SCENE 3 & 4: Product Dashboard & In-Place Scenarios -->
+        <div class="dashboard-scene" id="dashboard-scene">
+          <div class="dash-sidebar">
+            <div>
+              <div style="font-weight:700;font-size:14px;margin-bottom:16px;">Founder Brain</div>
+              <div class="dash-nav-item active">Universal Search</div>
+              <div class="dash-nav-item">Timeline</div>
+              <div class="dash-nav-item">Knowledge Cards</div>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);">18,420 memories active</div>
+          </div>
+
+          <div class="dash-workspace">
+            <div class="dash-scenario-bar">
+              <span style="font-size:11px;font-weight:700;color:var(--text-muted);">SCENARIO SWITCHER:</span>
+              <div>
+                <button class="scenario-tab active" id="tab-fundraising">💰 Fundraising</button>
+                <button class="scenario-tab" id="tab-hiring">👥 Hiring</button>
+                <button class="scenario-tab" id="tab-gtm">🚀 Go-to-market</button>
+              </div>
+            </div>
+
+            <div class="dash-body">
+              <input type="text" class="dash-search-input" id="dash-query" value="What did Rahul say about fundraising?">
+              
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;" id="dash-answer-target">
+                <div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:6px;">SYNTHESIZED ANSWER</div>
+                <div style="font-size:14px;line-height:1.5;">Rahul suggested targeting a <strong style="color:var(--accent);">$3M raise</strong> at a <strong style="color:var(--accent);">$15M valuation</strong>.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCENE 5: Testimonial Cards Emergence -->
+        <div class="testimonials-overlay-scene" id="testimonials-scene">
+          <div class="trust-card">
+            <p style="font-family:var(--serif);font-size:18px;margin-bottom:16px;">"AIDAN eliminated the 20 minutes I wasted every day searching for investor notes."</p>
+            <div style="font-size:13px;font-weight:700;">Marcus Vance · Founder, Koda</div>
+          </div>
+          <div class="trust-card">
+            <p style="font-family:var(--serif);font-size:18px;margin-bottom:16px;">"Now AIDAN organizes my notes passively in the background."</p>
+            <div style="font-size:13px;font-weight:700;">Sarah Chen · Co-founder, Horizon</div>
+          </div>
+          <div class="trust-card">
+            <p style="font-family:var(--serif);font-size:18px;margin-bottom:16px;">"It feels like a co-founder with a photographic memory."</p>
+            <div style="font-size:13px;font-weight:700;">David Park · Head of Product, Nexus</div>
+          </div>
+        </div>
+
+        <!-- SCENE 6: Final Climax Resolution -->
+        <div class="climax-scene" id="climax-scene">
+          <h1 class="climax-headline">Stop searching.<br><em>Start remembering.</em></h1>
+          <p style="font-size:18px;color:var(--text-sec);margin-bottom:32px;">Join thousands of founders who have built a perfect digital memory.</p>
+          <a href="#waitlist" class="cta-primary" style="font-size:16px;padding:18px 36px;">Build Your Second Brain →</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    'use strict';
+    gsap.registerPlugin(ScrollTrigger);
+
+    const progressBar = document.getElementById('scroll-progress-bar');
+    
+    /* ─── 1. Top Progress Indicator ─── */
+    window.addEventListener('scroll', () => {
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      progressBar.style.width = (window.scrollY / total) * 100 + '%';
+    }, { passive: true });
+
+    /* ─── 2. Micro-Interaction In-Place Scenario Swapper (150ms cross-fade) ─── */
+    const scenarios = {
+      fundraising: {
+        query: "What did Rahul say about fundraising?",
+        answerHTML: '<div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:6px;">SYNTHESIZED ANSWER</div><div style="font-size:14px;line-height:1.5;">Rahul suggested targeting a <strong style="color:var(--accent);">$3M raise</strong> at a <strong style="color:var(--accent);">$15M valuation</strong>.</div>'
+      },
+      hiring: {
+        query: "What are the candidate concerns for VP of Engineering?",
+        answerHTML: '<div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:6px;">SYNTHESIZED ANSWER</div><div style="font-size:14px;line-height:1.5;">Marcus Vance requested a <strong style="color:var(--accent);">$240k base salary</strong> and <strong style="color:var(--accent);">0.8% equity grant</strong>.</div>'
+      },
+      gtm: {
+        query: "What is our Q4 GTM pricing & retention strategy?",
+        answerHTML: '<div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:6px;">SYNTHESIZED ANSWER</div><div style="font-size:14px;line-height:1.5;">Targeting a <strong style="color:var(--accent);">$49/mo Pro tier</strong> with an <strong style="color:var(--accent);">85% PLG retention benchmark</strong>.</div>'
+      }
+    };
+
+    const queryInput = document.getElementById('dash-query');
+    const answerTarget = document.getElementById('dash-answer-target');
+
+    document.getElementById('tab-fundraising').addEventListener('click', () => swapScenario('fundraising'));
+    document.getElementById('tab-hiring').addEventListener('click', () => swapScenario('hiring'));
+    document.getElementById('tab-gtm').addEventListener('click', () => swapScenario('gtm'));
+
+    function swapScenario(key) {
+      const data = scenarios[key];
+      if (!data) return;
+      document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+
+      gsap.to(answerTarget, { opacity: 0, duration: 0.15, onComplete: () => {
+        queryInput.value = data.query;
+        answerTarget.innerHTML = data.answerHTML;
+        gsap.to(answerTarget, { opacity: 1, duration: 0.2 });
+      }});
+    }
+
+    /* ─── 3. Primary & Secondary Scrubbed Timeline (Stagger Grid Enabled) ─── */
+    if (window.innerWidth >= 1024) {
+      const masterTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#master-track',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1.2
+        }
+      });
+
+      /* PRIMARY TRANSITION 1: Hero -> Integrations (0.75s Duration Equivalent) */
+      masterTl.to('#hero-scene', { scale: 1.08, opacity: 0.2, duration: 0.75, ease: 'power2.inOut' }, 0);
+      masterTl.to('#integrations-scene', { opacity: 1, pointerEvents: 'auto', duration: 0.75, ease: 'power2.inOut' }, 0.15);
+
+      /* SECONDARY TRANSITION 2: Integrations -> Memory Story (0.40s Duration) */
+      masterTl.to('#integrations-scene', { scale: 0.92, opacity: 0.2, duration: 0.40 }, 0.35);
+      
+      // Staggered SVG Path Drawings (80ms Stagger Interval Grid)
+      masterTl.to('#neural-path-1', { strokeDashoffset: 0, opacity: 0.4, duration: 0.35 }, 0.40);
+      masterTl.to('#neural-path-2', { strokeDashoffset: 0, opacity: 0.4, duration: 0.35 }, 0.48); // +80ms
+      masterTl.to('#neural-path-3', { strokeDashoffset: 0, opacity: 0.4, duration: 0.35 }, 0.56); // +80ms
+
+      /* PRIMARY TRANSITION 3: Memory Story -> Dashboard (0.75s Duration) */
+      masterTl.to('#dashboard-scene', { opacity: 1, scale: 1.0, duration: 0.75, ease: 'power3.out' }, 0.60);
+
+      /* SECONDARY TRANSITION 5: Dashboard -> Testimonials Emergence (0.40s Duration) */
+      masterTl.to('#dashboard-scene', { scale: 0.90, opacity: 0.15, duration: 0.40 }, 0.80);
+      masterTl.to('#testimonials-scene', { opacity: 1, pointerEvents: 'auto', duration: 0.40 }, 0.82);
+
+      /* PRIMARY TRANSITION 6: Testimonials -> Final Climax CTA (0.75s Duration) */
+      masterTl.to('#testimonials-scene', { opacity: 0, scale: 0.94, duration: 0.40 }, 0.90);
+      masterTl.to('#climax-scene', { opacity: 1, pointerEvents: 'auto', duration: 0.75, ease: 'power3.out' }, 0.92);
+    }
+
+  })();
+  </script>
+</body>
+</html>

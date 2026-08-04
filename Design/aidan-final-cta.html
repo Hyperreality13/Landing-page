@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIDAN — Memorable Final Resolution</title>
+  <meta name="description" content="Stop searching. Start remembering. Build your second brain with AIDAN.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- GSAP -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #F8F7F3;              /* Warm organic off-white canvas */
+      --surface: #FFFFFF;         /* Crisp white card surface */
+      --text: #111111;            /* Carbon text */
+      --text-sec: #666666;        /* Muted carbon body text */
+      --text-muted: #888888;      /* Meta labels */
+      --accent: #1E4FFF;          /* Electric Blue primary accent */
+      --border: #E6E4DF;          /* Soft border line */
+      --serif: 'Instrument Serif', Georgia, serif;
+      --sans: 'Inter', -apple-system, sans-serif;
+      --outfit: 'Outfit', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: var(--bg);
+      overflow-x: hidden;
+    }
+
+    /* ─── Navigation ─── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      background: rgba(248, 247, 243, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1320px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: var(--outfit);
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-logo-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--text);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .nav-cta {
+      padding: 9px 20px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sec);
+      text-decoration: none;
+      transition: all 0.25s ease;
+      background: var(--surface);
+    }
+    .nav-cta:hover {
+      color: var(--text);
+      border-color: var(--text);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+    }
+
+    /* ─── Memorable Final CTA Section Container ─── */
+    .final-section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding-top: 180px;
+      position: relative;
+    }
+
+    .final-content {
+      max-width: 960px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 0 40px;
+    }
+
+    /* Massive Editorial Headline */
+    .final-headline {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(56px, 7.5vw, 108px);
+      line-height: 1.02;
+      color: var(--text);
+      margin-bottom: 32px;
+      letter-spacing: -0.02em;
+    }
+    .final-headline em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    /* Simple Copy */
+    .final-sub {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--text-sec);
+      max-width: 480px;
+      margin: 0 auto 48px auto;
+    }
+
+    /* Beautiful Magnetic Button */
+    .cta-primary-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    .cta-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 100px;
+      padding: 18px 38px;
+      font-family: var(--sans);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 8px 30px rgba(30, 79, 255, 0.28);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .cta-primary:hover {
+      background: #1443EB;
+      box-shadow: 0 12px 36px rgba(30, 79, 255, 0.42);
+      transform: translateY(-2px);
+    }
+    .cta-primary svg {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.2s ease;
+    }
+    .cta-primary:hover svg {
+      transform: translateX(4px);
+    }
+
+    .trust-subtext {
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: 0.01em;
+    }
+
+    /* ─── Minimal 1-Line Footer ─── */
+    .footer {
+      width: 100%;
+      border-top: 1px solid var(--border);
+      padding: 28px 40px;
+      margin-top: 120px;
+      background: var(--bg);
+    }
+    .footer-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-sec);
+    }
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+    .footer-link {
+      color: var(--text-sec);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer-link:hover {
+      color: var(--text);
+    }
+
+    @media (max-width: 768px) {
+      .footer-inner {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+      .final-section { padding-top: 140px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-badge">A</div>
+        AIDAN
+      </a>
+      <a href="#waitlist" class="nav-cta">Build Your Second Brain</a>
+    </div>
+  </nav>
+
+  <!-- Memorable Final Section -->
+  <section class="final-section">
+    <div></div> <!-- Spacer -->
+
+    <div class="final-content">
+
+      <!-- Oversized Editorial Headline -->
+      <h1 class="final-headline">
+        Stop searching.<br>
+        <em>Start remembering.</em>
+      </h1>
+
+      <!-- Simple Copy -->
+      <p class="final-sub">
+        Join thousands of founders and leaders who have built a perfect digital memory.
+      </p>
+
+      <!-- Beautiful Magnetic Button -->
+      <div class="cta-primary-wrap" id="magnetic-cta">
+        <a href="#waitlist" class="cta-primary">
+          Build Your Second Brain
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 8h9M8.5 4l4 4-4 4"/></svg>
+        </a>
+      </div>
+
+      <!-- Trust Subtext -->
+      <div class="trust-subtext">
+        End-to-end encrypted · 2-minute setup · No credit card required
+      </div>
+
+    </div>
+
+    <!-- Minimal 1-Line Footer -->
+    <footer class="footer">
+      <div class="footer-inner">
+        <div>© 2026 AIDAN Technologies Inc. All rights reserved.</div>
+        <ul class="footer-links">
+          <li><a href="#" class="footer-link">Privacy Policy</a></li>
+          <li><a href="#" class="footer-link">Terms of Service</a></li>
+          <li><a href="#" class="footer-link">Twitter / X</a></li>
+          <li><a href="#" class="footer-link">GitHub</a></li>
+        </ul>
+      </div>
+    </footer>
+  </section>
+
+  <script>
+  (function() {
+    'use strict';
+
+    /* Magnetic CTA Button Physics */
+    const wrap = document.getElementById('magnetic-cta');
+    const btn = wrap.querySelector('.cta-primary');
+
+    wrap.addEventListener('mousemove', e => {
+      const rect = wrap.getBoundingClientRect();
+      const dx = e.clientX - (rect.left + rect.width / 2);
+      const dy = e.clientY - (rect.top + rect.height / 2);
+      gsap.to(btn, { x: dx * 0.25, y: dy * 0.25, duration: 0.25, ease: 'power2.out' });
+    });
+
+    wrap.addEventListener('mouseleave', () => {
+      gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: 'power3.out' });
+    });
+
+  })();
+  </script>
+</body>
+</html>

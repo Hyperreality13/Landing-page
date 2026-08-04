@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIDAN — Your AI Second Brain for Founders</title>
+  <meta name="description" content="AIDAN remembers every insight you've ever saved — so the right one finds you at the right moment. Built for founders.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --bg: #FAF9F6;
+      --white: #FFFFFF;
+      --black: #1A1A1A;
+      --text: #1A1A1A;
+      --text-2: #555555;
+      --text-3: #999999;
+      --text-4: #BBBBBB;
+      --border: #E8E6E1;
+      --border-light: #F0EEEA;
+      --accent: #1E4FFF;
+      --accent-hover: #1640D9;
+      --accent-light: rgba(30,79,255,0.06);
+      --teal: #20D9C7;
+      --serif: 'Instrument Serif', Georgia, serif;
+      --sans: 'Inter', -apple-system, system-ui, sans-serif;
+      --outfit: 'Outfit', sans-serif;
+      --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --maxw: 1200px;
+      --px: clamp(20px, 5vw, 80px);
+    }
+
+    html { overflow-x: hidden; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    ::selection {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+    /* ═══════════ Utility ═══════════ */
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding-left: var(--px); padding-right: var(--px); }
+    .reveal { opacity: 0; transform: translateY(28px) scale(0.97); filter: blur(8px); will-change: transform, opacity, filter; }
+    .reveal.revealed { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
+
+    /* ═══════════ NAV ═══════════ */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 64px;
+      display: flex; align-items: center;
+      transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+      border-bottom: 1px solid transparent;
+    }
+    .nav.scrolled {
+      background: rgba(250,249,246,0.92);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-bottom-color: var(--border);
+    }
+    .nav-inner {
+      max-width: var(--maxw); width: 100%; margin: 0 auto;
+      padding: 0 var(--px);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-left { display: flex; align-items: center; gap: 40px; }
+    .nav-brand {
+      font-family: var(--outfit); font-weight: 700; font-size: 17px;
+      letter-spacing: 0.06em; color: var(--text);
+      display: flex; align-items: center; gap: 9px;
+    }
+    .nav-mark {
+      width: 24px; height: 24px; border-radius: 6px;
+      background: var(--text);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: var(--bg);
+    }
+    .nav-links {
+      display: flex; gap: 32px; list-style: none;
+    }
+    .nav-links a {
+      font-size: 14px; font-weight: 450; color: var(--text-2);
+      transition: color 0.2s ease;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 20px; border-radius: 8px;
+      background: var(--text); color: var(--bg);
+      font-size: 13px; font-weight: 600; letter-spacing: 0.01em;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .nav-cta:hover { background: #333; }
+    .nav-cta:active { transform: scale(0.97); }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+    }
+
+    /* ═══════════ HERO ═══════════ */
+    .hero {
+      padding-top: 140px;
+      padding-bottom: 100px;
+      min-height: 100vh;
+      display: flex; align-items: center;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-bottom: 24px;
+    }
+    .hero-eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--teal);
+    }
+    .hero-eyebrow-text {
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text-3);
+    }
+    .hero-h1 {
+      font-family: var(--serif); font-weight: 400;
+      font-size: clamp(42px, 5vw, 72px);
+      line-height: 1.08; letter-spacing: -0.02em;
+      color: var(--text); margin-bottom: 28px;
+    }
+    .hero-h1 em {
+      font-style: italic; color: var(--text-2);
+    }
+    .hero-body {
+      font-size: 17px; line-height: 1.65; color: var(--text-2);
+      max-width: 460px; margin-bottom: 40px;
+    }
+    .hero-ctas {
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px; border-radius: 10px;
+      background: var(--text); color: var(--bg);
+      font-size: 15px; font-weight: 600;
+      transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    .btn-primary:hover {
+      background: #333;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary svg { width: 15px; height: 15px; transition: transform 0.2s ease; }
+    .btn-primary:hover svg { transform: translateX(2px); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 4px;
+      font-size: 15px; font-weight: 500; color: var(--text-2);
+      transition: color 0.2s ease;
+    }
+    .btn-ghost:hover { color: var(--text); }
+    .btn-ghost .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--teal); flex-shrink: 0;
+    }
+    .hero-note {
+      font-size: 13px; color: var(--text-4);
+    }
+
+    /* ─── Hero Product Mockup ─── */
+    .hero-product {
+      position: relative;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 40px rgba(0,0,0,0.06);
+    }
+    .product-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-light);
+      background: rgba(250,249,246,0.5);
+    }
+    .product-topbar-left {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .product-dots {
+      display: flex; gap: 5px;
+    }
+    .product-dots span {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border);
+    }
+    .product-title {
+      font-size: 12px; font-weight: 600; color: var(--text-3);
+      letter-spacing: 0.04em;
+    }
+    .product-live {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11px; color: var(--text-3); font-weight: 500;
+    }
+    .product-live-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--teal);
+      animation: pulse-live 2s ease infinite;
+    }
+    @keyframes pulse-live {
+      0%,100% { box-shadow: 0 0 0 0 rgba(32,217,199,0.3); }
+      50% { box-shadow: 0 0 0 4px rgba(32,217,199,0); }
+    }
+    .product-body { padding: 24px 20px 20px; }
+
+    .product-search {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 20px;
+      background: var(--bg);
+      transition: border-color 0.2s ease;
+    }
+    .product-search-icon {
+      width: 16px; height: 16px; color: var(--text-4); flex-shrink: 0;
+    }
+    .product-search-text {
+      font-size: 14px; color: var(--text-2); flex: 1;
+    }
+    .product-search-kbd {
+      font-size: 10px; font-weight: 600; color: var(--text-4);
+      border: 1px solid var(--border-light); border-radius: 4px;
+      padding: 2px 6px;
+    }
+
+    .product-results { display: flex; flex-direction: column; gap: 10px; }
+
+    .product-result {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 16px;
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      background: var(--white);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .product-result:hover {
+      border-color: var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .result-icon {
+      width: 28px; height: 28px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: white; flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .result-body { flex: 1; min-width: 0; }
+    .result-meta {
+      display: flex; align-items: center; gap: 6px; margin-bottom: 3px;
+    }
+    .result-source {
+      font-size: 11px; font-weight: 600; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .result-time {
+      font-size: 11px; color: var(--text-4);
+    }
+    .result-title {
+      font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px;
+      line-height: 1.3;
+    }
+    .result-snippet {
+      font-size: 13px; color: var(--text-2); line-height: 1.4;
+    }
+    .result-snippet mark {
+      background: rgba(30,79,255,0.08); color: var(--accent);
+      border-radius: 2px; padding: 0 2px;
+    }
+
+    .product-answer {
+      margin-top: 16px; padding: 16px;
+      background: var(--bg); border-radius: 10px;
+      border: 1px solid var(--border-light);
+    }
+    .product-answer-head {
+      display: flex; align-items: center; gap: 6px; margin-bottom: 10px;
+    }
+    .product-answer-label {
+      font-size: 11px; font-weight: 700; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .product-answer-text {
+      font-size: 14px; color: var(--text); line-height: 1.6;
+    }
+    .product-answer-text strong {
+      font-weight: 600;
+    }
+    .product-answer-sources {
+      display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap;
+    }
+    .source-chip {
+      font-size: 10px; font-weight: 600; color: var(--text-3);
+      padding: 3px 8px; border-radius: 5px;
+      background: var(--white); border: 1px solid var(--border-light);
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+      .hero { padding-top: 120px; padding-bottom: 60px; min-height: auto; }
+    }
+
+
+    /* ═══════════ SHARED ═══════════ */
+    .section-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text-3);
+      margin-bottom: 24px;
+    }
+    .section-label .bar {
+      width: 16px; height: 1.5px; background: var(--border); border-radius: 1px;
+    }
+
+    /* ═══════════ SECTION 2: EVERYTHING ALREADY LIVES SOMEWHERE ═══════════ */
+    .s2 {
+      padding: 0 0 160px;
+    }
+    .s2-top {
+      padding: 100px 0 80px;
+      border-top: 1px solid var(--border-light);
+    }
+    .s2-header {
+      max-width: 720px;
+    }
+    .s2-h2 {
+      font-family: var(--serif); font-weight: 400;
+      font-size: clamp(34px, 4.2vw, 58px);
+      line-height: 1.1; letter-spacing: -0.02em;
+      color: var(--text); margin-bottom: 24px;
+    }
+    .s2-h2 em { font-style: italic; color: var(--text-2); }
+    .s2-body {
+      font-size: 17px; line-height: 1.7; color: var(--text-2);
+      max-width: 500px;
+    }
+
+    /* ─── Bento Grid ─── */
+    .s2-bento {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: auto;
+      gap: 14px;
+      margin-top: 0;
+    }
+    .s2-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 20px;
+      text-align: left;
+      transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.3s ease;
+      will-change: transform;
+      position: relative;
+      overflow: hidden;
+    }
+    .s2-card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      border-color: #D8D6D1;
+    }
+    /* 3D tilt effect */
+    .s2-card.tilt-active {
+      transition: transform 0.12s ease-out, box-shadow 0.3s ease;
+    }
+    /* Span variations for visual interest */
+    .s2-card--wide { grid-column: span 2; }
+    .s2-card--tall { grid-row: span 2; display: flex; flex-direction: column; }
+    .s2-card--tall .s2-card-content { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+
+    .s2-card-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+    .s2-card-icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: white; flex-shrink: 0;
+    }
+    .s2-card-source {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-3); flex: 1;
+    }
+    .s2-card-age {
+      font-size: 11px; font-weight: 500; color: var(--text-4);
+      background: var(--bg); border-radius: 5px;
+      padding: 3px 8px;
+    }
+    .s2-card-title {
+      font-size: 15px; font-weight: 600; color: var(--text);
+      line-height: 1.35; margin-bottom: 6px;
+    }
+    .s2-card-snippet {
+      font-size: 13px; color: var(--text-2); line-height: 1.5;
+    }
+    .s2-card-meta {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 12px;
+      font-size: 11px; color: var(--text-4);
+    }
+    .s2-card-meta-dot {
+      width: 3px; height: 3px; border-radius: 50%; background: var(--border);
+    }
+
+    /* Punchline */
+    .s2-punchline {
+      text-align: center;
+      margin-top: 80px;
+    }
+    .s2-punchline p {
+      font-family: var(--serif); font-style: italic;
+      font-size: clamp(22px, 2.5vw, 32px);
+      color: var(--text-3); line-height: 1.3;
+    }
+
+    @media (max-width: 1024px) {
+      .s2-bento { grid-template-columns: repeat(2, 1fr); }
+      .s2-card--wide { grid-column: span 2; }
+      .s2-card--tall { grid-row: span 1; }
+    }
+    @media (max-width: 640px) {
+      .s2-bento { grid-template-columns: 1fr; gap: 12px; }
+      .s2-card--wide { grid-column: span 1; }
+      .s2 { padding-bottom: 100px; }
+    }
+
+    /* ═══════════ SECTION: DEMO (Sticky Scroll) ═══════════ */
+    .demo {
+      padding: 0;
+      position: relative;
+    }
+    .demo-sticky-wrap {
+      min-height: 300vh; /* scroll distance for sticky */
+      position: relative;
+    }
+    .demo-sticky {
+      position: sticky; top: 0;
+      height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .demo-inner {
+      text-align: center;
+      max-width: 700px; width: 100%;
+      padding: 0 var(--px);
+    }
+    .demo-label {
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text-3);
+      margin-bottom: 20px;
+    }
+    .demo-h2 {
+      font-family: var(--serif); font-weight: 400;
+      font-size: clamp(30px, 3.8vw, 48px);
+      line-height: 1.15; color: var(--text);
+      margin-bottom: 48px;
+    }
+    .demo-h2 em { font-style: italic; color: var(--text-2); }
+
+    /* Search box */
+    .demo-search {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 20px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 4px 24px rgba(0,0,0,0.05);
+      text-align: left;
+    }
+    .demo-search-icon { width: 18px; height: 18px; color: var(--text-4); flex-shrink: 0; }
+    .demo-search-query { font-size: 15px; color: var(--text); flex: 1; }
+    .demo-cursor {
+      display: inline-block; width: 2px; height: 18px;
+      background: var(--accent); border-radius: 1px;
+      animation: blink 1.1s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* Stacking result cards */
+    .demo-results {
+      position: relative;
+      min-height: 280px;
+      perspective: 1000px;
+    }
+    .demo-card {
+      position: absolute;
+      left: 0; right: 0;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 24px;
+      text-align: left;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.04);
+      opacity: 0;
+      transform: translateY(40px);
+      will-change: transform, opacity;
+    }
+    .demo-card-head {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+    }
+    .demo-card-icon {
+      width: 28px; height: 28px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: white; flex-shrink: 0;
+    }
+    .demo-card-source {
+      font-size: 11px; font-weight: 600; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .demo-card-time {
+      font-size: 11px; color: var(--text-4); margin-left: auto;
+    }
+    .demo-card-title {
+      font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px;
+    }
+    .demo-card-snippet {
+      font-size: 13px; color: var(--text-2); line-height: 1.5;
+    }
+    .demo-card-snippet mark {
+      background: rgba(30,79,255,0.07); color: var(--accent);
+      border-radius: 2px; padding: 0 2px;
+    }
+
+    /* Synthesized answer */
+    .demo-answer {
+      position: absolute; left: 0; right: 0; top: 0;
+      background: var(--white);
+      border: 1.5px solid var(--accent);
+      border-radius: 14px;
+      padding: 24px;
+      text-align: left;
+      box-shadow: 0 4px 24px rgba(30,79,255,0.08), 0 1px 3px rgba(0,0,0,0.03);
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+    }
+    .demo-answer-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 12px;
+    }
+    .demo-answer-badge-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+    }
+    .demo-answer-text {
+      font-size: 15px; color: var(--text); line-height: 1.65;
+    }
+    .demo-answer-text strong { font-weight: 600; }
+    .demo-answer-sources {
+      display: flex; gap: 6px; margin-top: 16px; flex-wrap: wrap;
+    }
+    .demo-source-chip {
+      font-size: 10px; font-weight: 600; color: var(--text-3);
+      padding: 4px 10px; border-radius: 6px;
+      background: var(--bg); border: 1px solid var(--border-light);
+    }
+
+    /* ═══════════ SECTION: HOW IT WORKS ═══════════ */
+    .how {
+      padding: 140px 0;
+      border-top: 1px solid var(--border-light);
+    }
+    .how-header {
+      text-align: center; margin-bottom: 80px;
+    }
+    .how-h2 {
+      font-family: var(--serif); font-weight: 400;
+      font-size: clamp(30px, 3.8vw, 48px);
+      line-height: 1.15; color: var(--text);
+      margin-bottom: 16px;
+    }
+    .how-h2 em { font-style: italic; color: var(--text-2); }
+    .how-sub {
+      font-size: 17px; color: var(--text-2); max-width: 480px; margin: 0 auto;
+    }
+    .how-steps {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+    .how-step {
+      padding: 40px 32px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .how-step:hover {
+      box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+      transform: translateY(-3px);
+    }
+    .how-num {
+      font-family: var(--serif); font-size: 42px;
+      color: var(--border); line-height: 1; margin-bottom: 20px;
+    }
+    .how-step-h {
+      font-family: var(--serif); font-size: 24px;
+      line-height: 1.2; margin-bottom: 12px; color: var(--text);
+    }
+    .how-step-body {
+      font-size: 15px; line-height: 1.6; color: var(--text-2);
+    }
+
+    @media (max-width: 768px) {
+      .how-steps { grid-template-columns: 1fr; gap: 16px; }
+    }
+
+    /* ═══════════ SECTION: INTEGRATIONS ═══════════ */
+    .integrations {
+      padding: 120px 0;
+      border-top: 1px solid var(--border-light);
+    }
+    .integrations-header {
+      text-align: center; margin-bottom: 64px;
+    }
+    .integrations-h2 {
+      font-family: var(--serif); font-weight: 400;
+      font-size: clamp(28px, 3.5vw, 44px);
+      line-height: 1.15; color: var(--text); margin-bottom: 16px;
+    }
+    .integrations-h2 em { font-style: italic; color: var(--text-2); }
+    .integrations-sub {
+      font-size: 16px; color: var(--text-2); max-width: 440px; margin: 0 auto;
+    }
+    .integrations-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      max-width: 640px; margin: 0 auto;
+    }
+    .int-card {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 10px;
+      padding: 28px 16px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.3s ease;
+    }
+    .int-card:hover {
+      border-color: var(--text-4);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      transform: translateY(-2px);
+    }
+    .int-icon {
+      width: 36px; height: 36px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: white;
+    }
+    .int-name {
+      font-size: 12px; font-weight: 600; color: var(--text-2);
+    }
+    .int-soon {
+      font-size: 10px; font-weight: 500; color: var(--text-4);
+      background: var(--bg); border-radius: 4px;
+      padding: 2px 6px;
+    }
+
+    @media (max-width: 640px) {
+      .integrations-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* ═══════════ SECTION: PRIVACY ═══════════ */
+    .privacy {
+      padding: 120px 0;
+      border-top: 1px solid var(--border-light);
+    }
+    .privacy-inner {
+      max-width: 760px; margin: 0 auto; text-align: center;
+    }
+    .privacy-h2 {
+      font-family: var(--serif); font-weight: 400;
+      font-size: clamp(30px, 3.8vw, 48px);
+      line-height: 1.15; color: var(--text); margin-bottom: 20px;
+    }
+    .privacy-body {
+      font-size: 17px; color: var(--text-2); line-height: 1.65;
+      max-width: 480px; margin: 0 auto 48px;
+    }
+    .privacy-points {
+      display: flex; justify-content: center; gap: 48px; flex-wrap: wrap;
+    }
+    .privacy-point {
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .privacy-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--white); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .privacy-icon svg { width: 20px; height: 20px; color: var(--text); }
+    .privacy-point-label {
+      font-size: 14px; font-weight: 600; color: var(--text);
+    }
+    .privacy-point-desc {
+      font-size: 13px; color: var(--text-2); max-width: 180px;
+    }
+
+    /* ═══════════ SECTION: FINAL CTA ═══════════ */
+    .final-cta {
+      padding: 140px 0 120px;
+      border-top: 1px solid var(--border-light);
+    }
+    .final-cta-inner {
+      max-width: 680px; margin: 0 auto; text-align: center;
+    }
+    .final-h2 {
+      font-family: var(--serif); font-weight: 400;
+      font-size: clamp(36px, 5vw, 64px);
+      line-height: 1.08; color: var(--text); margin-bottom: 20px;
+    }
+    .final-h2 em { font-style: italic; color: var(--text-2); }
+    .final-sub {
+      font-size: 17px; color: var(--text-2); margin-bottom: 40px;
+      line-height: 1.6;
+    }
+    .wl-form {
+      display: flex; gap: 10px; max-width: 440px; margin: 0 auto 20px;
+    }
+    .wl-input {
+      flex: 1; padding: 14px 18px;
+      border: 1px solid var(--border); border-radius: 10px;
+      font-family: var(--sans); font-size: 15px;
+      color: var(--text); background: var(--white);
+      outline: none; transition: border-color 0.2s ease;
+    }
+    .wl-input::placeholder { color: var(--text-4); }
+    .wl-input:focus { border-color: var(--text-3); }
+    .wl-btn {
+      padding: 14px 24px; border-radius: 10px;
+      background: var(--text); color: var(--bg);
+      font-size: 15px; font-weight: 600;
+      white-space: nowrap;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .wl-btn:hover { background: #333; }
+    .wl-btn:active { transform: scale(0.97); }
+    .wl-note {
+      font-size: 12px; color: var(--text-4);
+    }
+
+    @media (max-width: 640px) {
+      .wl-form { flex-direction: column; }
+    }
+
+    /* ═══════════ FOOTER ═══════════ */
+    .footer {
+      padding: 48px 0;
+      border-top: 1px solid var(--border-light);
+    }
+    .footer-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-left {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .footer-brand {
+      font-family: var(--outfit); font-weight: 700; font-size: 15px;
+      letter-spacing: 0.06em; color: var(--text);
+    }
+    .footer-copy {
+      font-size: 13px; color: var(--text-4);
+    }
+    .footer-links {
+      display: flex; gap: 24px;
+    }
+    .footer-links a {
+      font-size: 13px; color: var(--text-3);
+      transition: color 0.2s ease;
+    }
+    .footer-links a:hover { color: var(--text); }
+
+    /* ═══════════ Scroll Progress ═══════════ */
+    .scroll-progress {
+      position: fixed; top: 0; left: 0; z-index: 200;
+      height: 2px; background: var(--text);
+      transform-origin: left;
+      transform: scaleX(0);
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Scroll Progress Bar -->
+  <div class="scroll-progress" id="scroll-progress"></div>
+
+  <!-- ═══════════ NAV ═══════════ -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <a href="#" class="nav-brand">
+          <div class="nav-mark">A</div>
+          AIDAN
+        </a>
+        <ul class="nav-links">
+          <li><a href="#how-section">How it works</a></li>
+          <li><a href="#integrations-section">Integrations</a></li>
+          <li><a href="#privacy-section">Privacy</a></li>
+        </ul>
+      </div>
+      <a href="#cta-section" class="nav-cta">Join the waitlist</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <section class="hero" id="hero-section">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="hero-eyebrow reveal">
+            <span class="hero-eyebrow-dot"></span>
+            <span class="hero-eyebrow-text">Your AI Second Brain</span>
+          </div>
+          <h1 class="hero-h1 reveal">
+            Save the insight.<br>
+            Forget about it.<br>
+            <em>We'll bring it back.</em>
+          </h1>
+          <p class="hero-body reveal">
+            AIDAN remembers every podcast, reel, article and conversation you've ever saved — so the right insight finds you at the right moment.
+          </p>
+          <div class="hero-ctas reveal">
+            <a href="#cta-section" class="btn-primary">
+              Join the waitlist
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8h9M8.5 4l4 4-4 4"/></svg>
+            </a>
+            <button class="btn-ghost">
+              <span class="dot"></span>
+              See how it works
+            </button>
+          </div>
+          <p class="hero-note reveal">Early access · Built for founders</p>
+        </div>
+
+        <!-- Product Interface Mockup -->
+        <div class="hero-product reveal" id="hero-product">
+          <div class="product-topbar">
+            <div class="product-topbar-left">
+              <div class="product-dots"><span></span><span></span><span></span></div>
+              <span class="product-title">AIDAN · RECALL</span>
+            </div>
+            <div class="product-live">
+              <span class="product-live-dot"></span>
+              connected
+            </div>
+          </div>
+          <div class="product-body">
+            <div class="product-search">
+              <svg class="product-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+              <span class="product-search-text">What did Rahul say about fundraising?</span>
+              <span class="product-search-kbd">⌘K</span>
+            </div>
+            <div class="product-results">
+              <div class="product-result">
+                <div class="result-icon" style="background:#25D366">W</div>
+                <div class="result-body">
+                  <div class="result-meta">
+                    <span class="result-source">WhatsApp</span>
+                    <span class="result-time">· 2:34 PM</span>
+                  </div>
+                  <div class="result-title">Rahul</div>
+                  <div class="result-snippet">"<mark>Let's target $3M at $15M valuation</mark> for the round"</div>
+                </div>
+              </div>
+              <div class="product-result">
+                <div class="result-icon" style="background:#4285F4">C</div>
+                <div class="result-body">
+                  <div class="result-meta">
+                    <span class="result-source">Chrome</span>
+                    <span class="result-time">· 2 hrs ago</span>
+                  </div>
+                  <div class="result-title">Series A Benchmarks 2026</div>
+                  <div class="result-snippet">"<mark>$15M valuation is realistic</mark> given current ARR metrics"</div>
+                </div>
+              </div>
+              <div class="product-result">
+                <div class="result-icon" style="background:#EA4335">M</div>
+                <div class="result-body">
+                  <div class="result-meta">
+                    <span class="result-source">Gmail</span>
+                    <span class="result-time">· Tuesday</span>
+                  </div>
+                  <div class="result-title">Sarah Chen · Investor</div>
+                  <div class="result-snippet">"Happy to <mark>do a partner intro</mark> after your next milestone"</div>
+                </div>
+              </div>
+            </div>
+            <div class="product-answer">
+              <div class="product-answer-head">
+                <span class="product-answer-label">✦ AIDAN Summary</span>
+              </div>
+              <div class="product-answer-text">
+                Rahul suggested raising <strong>$3M at $15M valuation</strong>. Research confirms this is realistic for your ARR stage. Sarah Chen offered a <strong>partner intro</strong> after your next milestone.
+              </div>
+              <div class="product-answer-sources">
+                <span class="source-chip">WhatsApp</span>
+                <span class="source-chip">Chrome</span>
+                <span class="source-chip">Gmail</span>
+                <span class="source-chip">PDF</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SECTION 2: EVERYTHING ALREADY LIVES SOMEWHERE ═══════════ -->
+  <section class="s2" id="s2-section">
+    <div class="s2-top">
+      <div class="wrap">
+        <div class="s2-header">
+          <div class="section-label reveal">
+            <span class="bar"></span>
+            The honest part
+          </div>
+          <h2 class="s2-h2 reveal">
+            Everything already<br><em>lives somewhere.</em>
+          </h2>
+          <p class="s2-body reveal">
+            You watched that podcast in February. Saved that fundraising reel in March. Bookmarked the pricing thread six months ago. It's all there — scattered across a dozen apps you'll never reopen.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="s2-bento">
+
+        <!-- Card 1: YouTube — wide -->
+        <div class="s2-card s2-card--wide s2-bento-card">
+          <div class="s2-card-header">
+            <div class="s2-card-icon" style="background:#FF3D3D">▶</div>
+            <span class="s2-card-source">YouTube</span>
+            <span class="s2-card-age">8 months ago</span>
+          </div>
+          <div class="s2-card-title">The GTM mistake every first-time founder makes</div>
+          <div class="s2-card-snippet">"Price for retention, not acquisition. Lead with annual plans. It cuts churn by ~40%."</div>
+          <div class="s2-card-meta">
+            <span>Lenny's Podcast</span>
+            <span class="s2-card-meta-dot"></span>
+            <span>48 min</span>
+          </div>
+        </div>
+
+        <!-- Card 2: LinkedIn -->
+        <div class="s2-card s2-bento-card">
+          <div class="s2-card-header">
+            <div class="s2-card-icon" style="background:#0A66C2">in</div>
+            <span class="s2-card-source">LinkedIn</span>
+            <span class="s2-card-age">7 mo</span>
+          </div>
+          <div class="s2-card-title">What VCs actually mean when they say "traction"</div>
+          <div class="s2-card-snippet">Saved post · 2,400 likes</div>
+        </div>
+
+        <!-- Card 3: Instagram -->
+        <div class="s2-card s2-bento-card">
+          <div class="s2-card-header">
+            <div class="s2-card-icon" style="background:#E1306C">◎</div>
+            <span class="s2-card-source">Instagram</span>
+            <span class="s2-card-age">5 mo</span>
+          </div>
+          <div class="s2-card-title">Cold email that got a YC interview</div>
+          <div class="s2-card-snippet">Saved reel · 45 sec</div>
+        </div>
+
+        <!-- Card 4: X/Twitter -->
+        <div class="s2-card s2-bento-card">
+          <div class="s2-card-header">
+            <div class="s2-card-icon" style="background:#000000">𝕏</div>
+            <span class="s2-card-source">X</span>
+            <span class="s2-card-age">4 mo</span>
+          </div>
+          <div class="s2-card-title">"Three-piece bundles convert 2.4x better than single SKUs."</div>
+          <div class="s2-card-snippet">Bookmarked thread · 12 posts</div>
+        </div>
+
+        <!-- Card 5: Podcast — tall -->
+        <div class="s2-card s2-card--tall s2-bento-card">
+          <div class="s2-card-header">
+            <div class="s2-card-icon" style="background:#1DB954">♫</div>
+            <span class="s2-card-source">Podcast</span>
+            <span class="s2-card-age">6 mo</span>
+          </div>
+          <div class="s2-card-content">
+            <div>
+              <div class="s2-card-title">The seed deck teardown nobody talks about</div>
+              <div class="s2-card-snippet">"Your first slide should be the market size they already believe in — not the one you're trying to prove."</div>
+            </div>
+            <div class="s2-card-meta">
+              <span>Sequoia Arc</span>
+              <span class="s2-card-meta-dot"></span>
+              <span>36 min</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 6: Chrome — wide -->
+        <div class="s2-card s2-card--wide s2-bento-card">
+          <div class="s2-card-header">
+            <div class="s2-card-icon" style="background:#4285F4">C</div>
+            <span class="s2-card-source">Chrome</span>
+            <span class="s2-card-age">3 mo</span>
+          </div>
+          <div class="s2-card-title">Series A benchmarks for B2B SaaS (2026)</div>
+          <div class="s2-card-snippet">"$1.5M ARR, 15% MoM growth, 120% NDR — that's the bar for a $15M pre-money round."</div>
+          <div class="s2-card-meta">
+            <span>Open tab · never revisited</span>
+          </div>
+        </div>
+
+        <!-- Card 7: ChatGPT -->
+        <div class="s2-card s2-bento-card">
+          <div class="s2-card-header">
+            <div class="s2-card-icon" style="background:#10A37F">G</div>
+            <span class="s2-card-source">ChatGPT</span>
+            <span class="s2-card-age">2 mo</span>
+          </div>
+          <div class="s2-card-title">Hiring your first engineer</div>
+          <div class="s2-card-snippet">Thread · 14 messages deep</div>
+        </div>
+
+        <!-- Card 8: Instagram Reel -->
+        <div class="s2-card s2-bento-card">
+          <div class="s2-card-header">
+            <div class="s2-card-icon" style="background:#E1306C">◎</div>
+            <span class="s2-card-source">Instagram</span>
+            <span class="s2-card-age">1 mo</span>
+          </div>
+          <div class="s2-card-title">The 45-second reel that nailed GTM positioning</div>
+          <div class="s2-card-snippet">Saved · liked · forgotten</div>
+        </div>
+
+      </div>
+
+      <!-- Punchline -->
+      <div class="s2-punchline reveal">
+        <p>You just can't find any of it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ DEMO (Scroll-Driven) ═══════════ -->
+  <section class="demo" id="demo-section">
+    <div class="demo-sticky-wrap">
+      <div class="demo-sticky">
+        <div class="demo-inner">
+          <div class="demo-label">Ask AIDAN</div>
+          <h2 class="demo-h2">
+            The answer <em>already exists.</em>
+          </h2>
+
+          <!-- Search Bar -->
+          <div class="demo-search" id="demo-search">
+            <svg class="demo-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <span class="demo-search-query" id="demo-query"></span>
+            <span class="demo-cursor"></span>
+          </div>
+
+          <!-- Stacking Results -->
+          <div class="demo-results" id="demo-results">
+            <div class="demo-card" data-index="0">
+              <div class="demo-card-head">
+                <div class="demo-card-icon" style="background:#25D366">W</div>
+                <span class="demo-card-source">WhatsApp</span>
+                <span class="demo-card-time">Tuesday</span>
+              </div>
+              <div class="demo-card-title">Rahul</div>
+              <div class="demo-card-snippet">"We should <mark>target a $3M raise</mark>. I think $15M pre-money is realistic."</div>
+            </div>
+
+            <div class="demo-card" data-index="1">
+              <div class="demo-card-head">
+                <div class="demo-card-icon" style="background:#4285F4">C</div>
+                <span class="demo-card-source">Chrome</span>
+                <span class="demo-card-time">2 hrs ago</span>
+              </div>
+              <div class="demo-card-title">Series A Research</div>
+              <div class="demo-card-snippet">"At current metrics, <mark>$12-18M pre-money valuation</mark> is the expected range."</div>
+            </div>
+
+            <div class="demo-card" data-index="2">
+              <div class="demo-card-head">
+                <div class="demo-card-icon" style="background:#FF6D00">P</div>
+                <span class="demo-card-source">PDF</span>
+                <span class="demo-card-time">Mon</span>
+              </div>
+              <div class="demo-card-title">fundraising-deck-v3.pdf</div>
+              <div class="demo-card-snippet">"<mark>$3M round, 20% dilution target</mark>. Focus on warm introductions."</div>
+            </div>
+
+            <div class="demo-card" data-index="3">
+              <div class="demo-card-head">
+                <div class="demo-card-icon" style="background:#D4A574">C</div>
+                <span class="demo-card-source">Claude</span>
+                <span class="demo-card-time">Yesterday</span>
+              </div>
+              <div class="demo-card-title">Investor strategy session</div>
+              <div class="demo-card-snippet">"Focus on <mark>3-4 warm intros</mark>, skip cold outreach. Optimize for lead investor."</div>
+            </div>
+
+            <div class="demo-card" data-index="4">
+              <div class="demo-card-head">
+                <div class="demo-card-icon" style="background:#EA4335">M</div>
+                <span class="demo-card-source">Gmail</span>
+                <span class="demo-card-time">9:12 AM</span>
+              </div>
+              <div class="demo-card-title">Sarah Chen · Investor</div>
+              <div class="demo-card-snippet">"Happy to <mark>intro you to our partners</mark> once you hit the next milestone."</div>
+            </div>
+
+            <!-- Synthesized Answer -->
+            <div class="demo-answer" id="demo-answer">
+              <div class="demo-answer-badge">
+                <span class="demo-answer-badge-dot"></span>
+                AIDAN · 5 sources
+              </div>
+              <div class="demo-answer-text">
+                Rahul suggested raising <strong>$3M at $15M pre-money</strong> valuation. Your research confirms this is realistic at your ARR stage ($12-18M range). Strategy: focus on <strong>3-4 warm intros</strong> over cold outreach. Sarah Chen from [Fund] has offered a <strong>partner introduction</strong> after your next milestone.
+              </div>
+              <div class="demo-answer-sources">
+                <span class="demo-source-chip">WhatsApp</span>
+                <span class="demo-source-chip">Chrome</span>
+                <span class="demo-source-chip">PDF</span>
+                <span class="demo-source-chip">Claude</span>
+                <span class="demo-source-chip">Gmail</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ HOW IT WORKS ═══════════ -->
+  <section class="how" id="how-section">
+    <div class="wrap">
+      <div class="how-header">
+        <div class="section-label reveal">
+          <span class="bar"></span>
+          How it works
+        </div>
+        <h2 class="how-h2 reveal">Three steps.<br><em>Zero new habits.</em></h2>
+        <p class="how-sub reveal">
+          You already save things. Just save to AIDAN — so the right insight finds you at the right moment.
+        </p>
+      </div>
+      <div class="how-steps">
+        <div class="how-step reveal">
+          <div class="how-num">01</div>
+          <h3 class="how-step-h">Save the insight</h3>
+          <p class="how-step-body">
+            Share anything you come across — podcasts, reels, articles, posts — straight to AIDAN. As simple as texting a friend.
+          </p>
+        </div>
+        <div class="how-step reveal">
+          <div class="how-num">02</div>
+          <h3 class="how-step-h">We read the whole thing</h3>
+          <p class="how-step-body">
+            AIDAN reads and understands the full content, skips the fluff, and extracts the one idea that actually matters. Tagged to your stage automatically.
+          </p>
+        </div>
+        <div class="how-step reveal">
+          <div class="how-num">03</div>
+          <h3 class="how-step-h">It comes back at the right time</h3>
+          <p class="how-step-body">
+            Months later, when you actually need it — everything you saved is there. Every insight, waiting for the moment it matters.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ INTEGRATIONS ═══════════ -->
+  <section class="integrations" id="integrations-section">
+    <div class="wrap">
+      <div class="integrations-header">
+        <div class="section-label reveal">
+          <span class="bar"></span>
+          Sources
+        </div>
+        <h2 class="integrations-h2 reveal">
+          Saves from <em>everywhere.</em>
+        </h2>
+        <p class="integrations-sub reveal">
+          AIDAN captures insights from the platforms you already use.
+        </p>
+      </div>
+      <div class="integrations-grid">
+        <div class="int-card reveal">
+          <div class="int-icon" style="background:#FF3D3D">▶</div>
+          <span class="int-name">YouTube</span>
+        </div>
+        <div class="int-card reveal">
+          <div class="int-icon" style="background:#0A66C2">in</div>
+          <span class="int-name">LinkedIn</span>
+        </div>
+        <div class="int-card reveal">
+          <div class="int-icon" style="background:#E1306C">◎</div>
+          <span class="int-name">Instagram</span>
+        </div>
+        <div class="int-card reveal">
+          <div class="int-icon" style="background:#000000">𝕏</div>
+          <span class="int-name">X / Twitter</span>
+        </div>
+        <div class="int-card reveal">
+          <div class="int-icon" style="background:#1DB954">♫</div>
+          <span class="int-name">Podcasts</span>
+        </div>
+        <div class="int-card reveal">
+          <div class="int-icon" style="background:#4285F4">C</div>
+          <span class="int-name">Chrome</span>
+        </div>
+        <div class="int-card reveal">
+          <div class="int-icon" style="background:#10A37F">G</div>
+          <span class="int-name">ChatGPT</span>
+        </div>
+        <div class="int-card reveal">
+          <div class="int-icon" style="background:#D4A574">C</div>
+          <span class="int-name">Claude</span>
+          <span class="int-soon">soon</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ PRIVACY ═══════════ -->
+  <section class="privacy" id="privacy-section">
+    <div class="wrap">
+      <div class="privacy-inner">
+        <div class="section-label reveal">
+          <span class="bar"></span>
+          Privacy
+        </div>
+        <h2 class="privacy-h2 reveal">Your memory<br>belongs to you.</h2>
+        <p class="privacy-body reveal">
+          We take data ownership seriously. You control what AIDAN remembers and what it forgets.
+        </p>
+        <div class="privacy-points">
+          <div class="privacy-point reveal">
+            <div class="privacy-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <span class="privacy-point-label">Encrypted</span>
+            <span class="privacy-point-desc">Your data is encrypted at rest and in transit.</span>
+          </div>
+          <div class="privacy-point reveal">
+            <div class="privacy-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <span class="privacy-point-label">Permission-based</span>
+            <span class="privacy-point-desc">You choose exactly what AIDAN can access.</span>
+          </div>
+          <div class="privacy-point reveal">
+            <div class="privacy-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg>
+            </div>
+            <span class="privacy-point-label">Delete anytime</span>
+            <span class="privacy-point-desc">Remove any memory, any time. No questions.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FINAL CTA ═══════════ -->
+  <section class="final-cta" id="cta-section">
+    <div class="wrap">
+      <div class="final-cta-inner">
+        <h2 class="final-h2 reveal">
+          Stop searching.<br><em>Start remembering.</em>
+        </h2>
+        <p class="final-sub reveal">
+          Every founder starts with a spark. AIDAN makes sure no insight is ever lost along the way.
+        </p>
+        <form class="wl-form reveal" id="wl-form" onsubmit="return handleSubmit(event)">
+          <input type="email" class="wl-input" placeholder="you@building.something" required id="wl-email">
+          <button type="submit" class="wl-btn">Join the waitlist</button>
+        </form>
+        <p class="wl-note reveal" id="wl-note">No spam — we promise. We're equally annoyed by it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-inner">
+        <div class="footer-left">
+          <span class="footer-brand">AIDAN</span>
+          <span class="footer-copy">© 2026 Aidantech Solutions Pvt. Ltd.</span>
+        </div>
+        <div class="footer-links">
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+          <a href="https://x.com/useaidan" target="_blank">X</a>
+          <a href="https://www.instagram.com/useaidan/" target="_blank">Instagram</a>
+          <a href="https://www.linkedin.com/company/aidanclub" target="_blank">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function() {
+    'use strict';
+    gsap.registerPlugin(ScrollTrigger);
+
+    const R = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const D = window.innerWidth >= 1024;
+
+    /* ═══════════ UTILITIES ═══════════ */
+    // Premium reveal: opacity + translateY + scale + blur (deblur)
+    function revealTo(el, vars = {}) {
+      return gsap.to(el, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: 'blur(0px)',
+        duration: vars.duration || 1,
+        delay: vars.delay || 0,
+        ease: vars.ease || 'power3.out',
+        stagger: vars.stagger || 0,
+        scrollTrigger: vars.scrollTrigger || undefined,
+        onComplete: vars.onComplete || undefined
+      });
+    }
+
+    function revealFrom(el, vars = {}) {
+      return gsap.from(el, {
+        opacity: 0,
+        y: vars.y || 32,
+        scale: vars.scale || 0.97,
+        filter: vars.filter || 'blur(6px)',
+        duration: vars.duration || 0.9,
+        delay: vars.delay || 0,
+        ease: vars.ease || 'power3.out',
+        stagger: vars.stagger || 0,
+        scrollTrigger: vars.scrollTrigger || undefined
+      });
+    }
+
+    /* ═══════════ SCROLL PROGRESS ═══════════ */
+    if (!R) {
+      gsap.to('#scroll-progress', {
+        scaleX: 1,
+        ease: 'none',
+        scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 0.2 }
+      });
+    }
+
+    /* ═══════════ NAV SCROLL ═══════════ */
+    const nav = document.getElementById('nav');
+    ScrollTrigger.create({
+      start: 60,
+      onUpdate: () => { if (window.scrollY > 60) nav.classList.add('scrolled'); else nav.classList.remove('scrolled'); }
+    });
+    if (window.scrollY > 60) nav.classList.add('scrolled');
+
+    /* ═══════════ HERO ENTRANCE ═══════════ */
+    if (R) {
+      document.querySelectorAll('.reveal').forEach(el => {
+        el.style.opacity = '1'; el.style.transform = 'none'; el.style.filter = 'none';
+      });
+    } else {
+      // Hero: staggered entrance with deblur + scale
+      const heroEls = document.querySelectorAll('#hero-section .reveal');
+      revealTo(heroEls, { duration: 1.1, stagger: 0.12, delay: 0.25, ease: 'power3.out' });
+
+      // All other reveals: scroll-triggered with deblur
+      document.querySelectorAll('.reveal:not(#hero-section .reveal)').forEach(el => {
+        revealTo(el, {
+          duration: 0.9,
+          scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+        });
+      });
+    }
+
+    /* ═══════════ HERO: SCROLL-OUT (blur + scale + parallax) ═══════════ */
+    if (!R && D) {
+      const heroLeft = document.getElementById('hero-left') || document.querySelector('.hero-left');
+      const heroProduct = document.getElementById('hero-product');
+
+      // Text side: fades + blurs + scales down as user scrolls away
+      if (heroLeft) {
+        gsap.to(heroLeft, {
+          opacity: 0,
+          filter: 'blur(12px)',
+          scale: 0.95,
+          y: -60,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#hero-section',
+            start: 'top top',
+            end: '60% top',
+            scrub: 0.4
+          }
+        });
+      }
+
+      // Product: parallax (slower scroll) + subtle scale
+      if (heroProduct) {
+        gsap.to(heroProduct, {
+          y: 80,
+          scale: 0.96,
+          filter: 'blur(4px)',
+          opacity: 0.6,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#hero-section',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 0.5
+          }
+        });
+      }
+    }
+
+    /* ═══════════ SECTION 2: BENTO CARD-STACK ENTRANCE ═══════════ */
+    if (!R) {
+      const bentoCards = gsap.utils.toArray('.s2-bento-card');
+
+      bentoCards.forEach((card, i) => {
+        // Card-fan staggered entrance: each card rises from below with
+        // progressive deblur and slight scale-up, like being dealt from a deck
+        revealFrom(card, {
+          y: 50 + i * 5,
+          scale: 0.94,
+          filter: 'blur(8px)',
+          duration: 0.85,
+          delay: i * 0.07,
+          scrollTrigger: { trigger: card, start: 'top 93%', once: true }
+        });
+
+        // Continuous parallax drift (subtle)
+        const dir = i % 2 === 0 ? 1 : -1;
+        gsap.to(card, {
+          y: dir * (6 + (i % 3) * 4),
+          ease: 'none',
+          scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: 0.6 }
+        });
+      });
+
+      // 3D tilt on hover for bento cards (desktop only)
+      if (D) {
+        bentoCards.forEach(card => {
+          card.addEventListener('mouseenter', () => card.classList.add('tilt-active'));
+          card.addEventListener('mouseleave', () => {
+            card.classList.remove('tilt-active');
+            gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.4, ease: 'power2.out' });
+          });
+          card.addEventListener('mousemove', e => {
+            if (!card.classList.contains('tilt-active')) return;
+            const rect = card.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            gsap.to(card, {
+              rotateY: x * 6,
+              rotateX: -y * 4,
+              duration: 0.15,
+              ease: 'power1.out',
+              transformPerspective: 800
+            });
+          });
+        });
+      }
+    }
+
+    /* ═══════════ DEMO: SCROLL-DRIVEN SEARCH STORYTELLING ═══════════ */
+    const queryText = 'What did Rahul say about fundraising?';
+    const queryEl = document.getElementById('demo-query');
+    const demoCards = gsap.utils.toArray('.demo-card');
+    const demoAnswer = document.getElementById('demo-answer');
+    const demoSearch = document.getElementById('demo-search');
+
+    if (!R && queryEl) {
+      // Set initial card states for stacking
+      demoCards.forEach((card, i) => {
+        gsap.set(card, {
+          opacity: 0,
+          y: 60,
+          scale: 0.96,
+          filter: 'blur(6px)',
+          zIndex: demoCards.length - i
+        });
+      });
+      gsap.set(demoAnswer, {
+        opacity: 0,
+        y: 30,
+        scale: 0.95,
+        filter: 'blur(10px)'
+      });
+
+      const demoTL = gsap.timeline({
+        scrollTrigger: {
+          trigger: '.demo-sticky-wrap',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 0.5,
+          pin: false
+        }
+      });
+
+      // Phase 1 (0 → 0.12): Search bar focuses, query types in
+      demoTL.to(demoSearch, {
+        boxShadow: '0 2px 8px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.08)',
+        borderColor: '#D8D6D1',
+        duration: 0.04,
+        ease: 'power2.out'
+      }, 0);
+
+      const charObj = { count: 0 };
+      demoTL.to(charObj, {
+        count: queryText.length,
+        duration: 0.12,
+        ease: 'power1.out',
+        onUpdate: () => {
+          queryEl.textContent = queryText.slice(0, Math.round(charObj.count));
+        }
+      }, 0);
+
+      // Phase 2 (0.14 → 0.62): Cards appear with stacking depth
+      // Each card slides up, deblurs, and stacks with increasing shadow and y-offset
+      demoCards.forEach((card, i) => {
+        const start = 0.14 + (i * 0.095);
+        demoTL.to(card, {
+          opacity: 1,
+          y: i * 6,
+          scale: 1,
+          filter: 'blur(0px)',
+          boxShadow: `0 ${2 + i * 2}px ${8 + i * 6}px rgba(0,0,0,${0.03 + i * 0.01})`,
+          duration: 0.08,
+          ease: 'power2.out'
+        }, start);
+      });
+
+      // Phase 3 (0.65 → 0.78): Cards collapse — blur + scale down + fade
+      demoTL.to(demoCards, {
+        opacity: 0,
+        y: -20,
+        scale: 0.94,
+        filter: 'blur(8px)',
+        duration: 0.1,
+        stagger: 0.015,
+        ease: 'power2.in'
+      }, 0.65);
+
+      // Phase 4 (0.78 → 0.95): Answer morphs in — deblur + scale up
+      demoTL.to(demoAnswer, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: 'blur(0px)',
+        duration: 0.15,
+        ease: 'power3.out'
+      }, 0.78);
+
+      // Search bar settles
+      demoTL.to(demoSearch, {
+        boxShadow: '0 1px 3px rgba(0,0,0,0.03), 0 4px 24px rgba(0,0,0,0.05)',
+        borderColor: '#E8E6E1',
+        duration: 0.1,
+        ease: 'power2.out'
+      }, 0.85);
+
+    } else if (queryEl) {
+      queryEl.textContent = queryText;
+      demoCards.forEach(c => { c.style.opacity = '1'; c.style.transform = 'none'; c.style.filter = 'none'; });
+    }
+
+    /* ═══════════ HOW-STEPS: SLIDE-IN WITH DEBLUR ═══════════ */
+    if (!R) {
+      gsap.utils.toArray('.how-step').forEach((step, i) => {
+        revealFrom(step, {
+          y: 40,
+          scale: 0.95,
+          filter: 'blur(6px)',
+          duration: 0.8,
+          delay: i * 0.1,
+          scrollTrigger: { trigger: step, start: 'top 86%', once: true }
+        });
+      });
+    }
+
+    /* ═══════════ INTEGRATION CARDS: STAGGER WITH BLUR ═══════════ */
+    if (!R) {
+      gsap.utils.toArray('.int-card').forEach((card, i) => {
+        revealFrom(card, {
+          y: 24,
+          scale: 0.96,
+          filter: 'blur(5px)',
+          duration: 0.6,
+          delay: i * 0.04,
+          scrollTrigger: { trigger: card, start: 'top 91%', once: true }
+        });
+      });
+    }
+
+    /* ═══════════ PRIVACY POINTS: STAGGER ═══════════ */
+    if (!R) {
+      gsap.utils.toArray('.privacy-point').forEach((pt, i) => {
+        revealFrom(pt, {
+          y: 28,
+          scale: 0.96,
+          filter: 'blur(5px)',
+          duration: 0.7,
+          delay: i * 0.08,
+          scrollTrigger: { trigger: pt, start: 'top 90%', once: true }
+        });
+      });
+    }
+
+    /* ═══════════ FINAL CTA: DRAMATIC ENTRANCE ═══════════ */
+    if (!R) {
+      const ctaEls = document.querySelectorAll('#cta-section .reveal');
+      ctaEls.forEach((el, i) => {
+        revealFrom(el, {
+          y: 40,
+          scale: 0.94,
+          filter: 'blur(10px)',
+          duration: 1,
+          delay: i * 0.1,
+          scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+        });
+      });
+    }
+
+    /* ═══════════ SECTION DIVIDER PARALLAX ═══════════ */
+    // Sections feel connected: each section's content slightly overlaps
+    // the previous section's exit by having gentle scroll-linked parallax
+    if (!R && D) {
+      ['.s2-top', '.how', '.integrations', '.privacy', '.final-cta'].forEach((sel, i) => {
+        const el = document.querySelector(sel);
+        if (!el) return;
+        gsap.from(el, {
+          y: 40,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top bottom',
+            end: 'top 60%',
+            scrub: 0.6
+          }
+        });
+      });
+    }
+
+    /* ═══════════ WAITLIST FORM ═══════════ */
+    window.handleSubmit = function(e) {
+      e.preventDefault();
+      const form = document.getElementById('wl-form');
+      const inner = form.querySelector('.wl-btn');
+      // Animate out
+      gsap.to(form.children, {
+        opacity: 0, y: -10, filter: 'blur(4px)', scale: 0.98,
+        duration: 0.3, stagger: 0.05, ease: 'power2.in',
+        onComplete: () => {
+          form.innerHTML = '<div style="padding:14px;font-size:15px;color:#1A1A1A;font-weight:500;opacity:0;transform:translateY(10px);filter:blur(4px)">✓ You\'re in. We\'ll ping you when the door opens.</div>';
+          gsap.to(form.children[0], { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power3.out' });
+        }
+      });
+      return false;
+    };
+
+  })();
+  </script>
+</body>
+</html>
